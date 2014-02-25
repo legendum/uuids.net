@@ -1,4 +1,4 @@
 uuid.is
 =======
 
-Anonymous and secure storage services
+A secure API to anonymize and share information privately.
