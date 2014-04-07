@@ -1,4 +1,4 @@
 uuids.net
 =========
 
-A secure service to anonymize and share information privately - see https://uuids.net
+Resilient Encrypted Anonymous Data Storage (READS) - see https://uuids.net
