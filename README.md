@@ -1,4 +1,4 @@
-uuid.is
-=======
+uuids.net
+=========
 
-A secure API to anonymize and share information privately - see https://uuid.is/
+A secure API to anonymize and share information privately - see https://uuids.net/
