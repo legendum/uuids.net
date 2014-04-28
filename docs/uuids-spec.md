@@ -16,11 +16,11 @@ password_digest (digest of a password chosen by the user)
 **Response:**
 secret_key
 
-The "accounts" KV store is updated to hold a new pair [digest(account):[crypt(secret_key),encrypt(meta_data, secret_key)]
+The "accounts" KV store is updated to hold a new pair [account_digest:[crypt(secret_key),encrypt(meta_data, secret_key)]
 and is used to authenticate operations and retrieve meta_data for the account. Crypt is used for salting.
 
-The "secrets" KV store is updated to hold a new pair [digest(reverse(account)):[crypt(password_digest),encrypt(secret_key, password_digest)]
-and is used to get a secret_key with the account and password_digest. Crypt is used for salting and we reverse the account to prevent mappings.
+The "secrets" KV store is updated to hold a new pair [account_digest:[crypt(password_digest),encrypt(secret_key, password_digest)]
+and is used to get a secret_key with the account and password_digest. Crypt is used for salting.
 
 A new KV store is created whose name is digest(account). This is known as the account's KV store and is used for measuring usage.
 
