@@ -1,0 +1,47 @@
+{
+  "name": "uuids",
+  "description": "A secure service to anonymize and share information privately",
+  "homepage": "https://uuids.net",
+  "keywords": [
+    "anonymous",
+    "encrypted",
+    "storage",
+    "secure",
+    "share",
+    "uuids"
+  ],
+  "author": {
+    "name": "Kevin Hutchinson",
+    "email": "uuids.net@gmail.com"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/legendum/uuids.net/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "asyncblock": ">= 2.1.18",
+    "aws-sdk": ">= 2.0.0-rc.20",
+    "chai": ">= 1.9.1",
+    "gdbm": ">= 1.2.0",
+    "http-status-codes": ">= 1.0.2",
+    "mocha": ">= 1.18.2",
+    "node-uuid": ">= 1.4.1",
+    "restify": ">= 2.8.1",
+    "scrypt": ">= 3.0.1",
+    "underscore": ">= 1.6.0",
+    "unirest": ">= 0.2.7",
+    "when": ">= 3.2.2",
+    "yargs": ">= 1.2.1"
+  },
+  "repository" : {
+    "type": "git",
+    "url": "http://github.com/legendum/uuids.git"
+  },
+  "scripts": {
+    "test": "mocha ./test/server"
+  },
+  "engine": "node >= 0.10.25",
+  "version": "1.0.0"
+}

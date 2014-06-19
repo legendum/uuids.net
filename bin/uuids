@@ -1,0 +1,115 @@
+#!/usr/bin/env node
+
+var USAGE = [
+  'usage: uuids <cmd> --port=80',
+  '',
+  '...where <cmd> is a command from:',
+  'start:   Start the UUIDs server on the specified port',
+  'archive: Save a file to the archive (requires <file> arg)',
+  'restore: Restore a file from the archive (use <file> arg)',
+  'invite:  Create an invitation code for a new account',
+  'keygen:  Generate a public/private keypair for UUIDs',
+  'quota:   Create a new quota for an account to claim',
+  'test:    Run all the tests',
+  'usage:   Display this message',
+  ''
+].join("\n");
+
+var argv = require('yargs').argv
+  , path = require('path')
+  , exec = require('child_process').exec
+  , asyncblock = require('asyncblock')
+  , env = require('../server/lib/env')(process.env.UUIDS_ENV || 'production')
+  , archive = require('../server/lib/archive')
+  , invites = require('../server/lib/invites')
+  , quotas = require('../server/lib/quotas')
+  , utils = require('../server/lib/utils');
+
+var UUIDS = (function(cmd) {
+
+  function usage() {
+    utils.quit(USAGE);
+  }
+
+  function system(cmd) {
+    asyncblock(function(flow){
+      exec(cmd, flow.add());
+      result = flow.wait();
+      console.log(result); 
+    });
+  }
+
+  function archiveFile() {
+    var filename = argv._[1]
+      , filepath = (filename ? path.join(process.cwd(), filename) : null);
+    if (!archive.active()) utils.quit("sorry, archive is not active");
+    if (filename && utils.exists(filepath)) {
+      archive.save(filepath, function(err) {
+        if (err) utils.quit(err);
+        utils.unlink(filepath);
+        utils.quit("archived %s", filepath);
+      });
+    } else {
+      utils.quit("usage: uuids archive <file>");
+    }
+  }
+
+  function restoreFile() {
+    var filename = argv._[1]
+      , filepath = (filename ? path.join(process.cwd(), filename) : null);
+    if (!archive.active()) utils.quit("sorry, archive is not active");
+    if (filename) {
+      archive.restore(filepath, function(err) {
+        if (err) utils.quit(err);
+        utils.quit("restored %s", filepath);
+      });
+    } else {
+      utils.quit("usage: uuids restore <file>");
+    }
+  }
+
+  function invite() {
+    utils.quit(invites.create(utils.uuid()));
+  }
+
+  function keygen() {
+    process.chdir(path.join(__dirname, '../keys'));
+    system('openssl genrsa -out uuids.pem 2048 && openssl rsa -in uuids.pem -pubout > uuids.pub');
+    utils.quit("keys generated");
+  }
+
+  function quota() {
+    var bytes = parseInt(argv._[1]);
+    if (bytes > 0) {
+      bytes = new 
+      utils.quit(quotas.create('' + bytes));
+    } else {
+      utils.quit("usage: uuids quota <bytes>");
+    }
+  }
+
+  function test() {
+    system('mocha ' + path.join(__dirname, '/../test/server'));
+  }
+
+  function start() {
+    require(path.join(__dirname, '/../server/uuids'));
+  }
+
+  var commands = {
+    help: usage
+  , archive: archiveFile
+  , restore: restoreFile
+  , invite: invite
+  , keygen: keygen
+  , quota: quota
+  , start: start
+  , test: test
+  , usage: usage
+  };
+  try {
+    commands[cmd]();
+  } catch(e) {
+    usage();
+  }
+})(argv._[0]);
