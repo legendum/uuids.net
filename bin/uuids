@@ -7,6 +7,7 @@ var USAGE = [
   'start:   Start the UUIDs server on the specified port',
   'archive: Save a file to the archive (requires <file> arg)',
   'restore: Restore a file from the archive (use <file> arg)',
+  'suspend: Suspend a share\'s account (use <share> arg)',
   'invite:  Create an invitation code for a new account',
   'keygen:  Generate a public/private keypair for UUIDs',
   'quota:   Create a new quota for an account to claim',
@@ -23,6 +24,7 @@ var argv = require('yargs').argv
   , archive = require('../server/lib/archive')
   , invites = require('../server/lib/invites')
   , quotas = require('../server/lib/quotas')
+  , shares = require('../server/lib/shares')
   , utils = require('../server/lib/utils');
 
 var UUIDS = (function(cmd) {
@@ -68,6 +70,20 @@ var UUIDS = (function(cmd) {
     }
   }
 
+  function suspendAccount() {
+    var uuidSharedPart = argv._[1]
+      , uuid = shares.access(uuidSharedPart)
+    if (uuid) {
+      new File(uuid, function(err, file) {
+        if (err) utils.quit(err);
+        file.usageObject().state('suspended');
+        utils.quit("suspended the account that owns share %s", uuidSharedPart);
+      });
+    } else {
+      utils.quit("usage: uuids suspend <share>");
+    }
+  }
+
   function invite() {
     utils.quit(invites.create(utils.uuid()));
   }
@@ -100,6 +116,7 @@ var UUIDS = (function(cmd) {
     help: usage
   , archive: archiveFile
   , restore: restoreFile
+  , suspend: suspendAccount
   , invite: invite
   , keygen: keygen
   , quota: quota
