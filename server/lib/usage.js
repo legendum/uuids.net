@@ -29,8 +29,10 @@ function Usage(uuid, next) {
   var usage = this;
   if (next) {
     this.createFromArchive(uuid, function(err) {
+      if (err) return next(err);
       var meta = usage.accountForStorage();
-      next(err, usage, meta);
+      err = usage.error(meta); // e.g. quota exceeded, or account suspended
+      next(err, usage);
     });
   } else {
     this.create(uuid);
@@ -60,7 +62,9 @@ Usage.method('accountForStorage', function() {
 
 Usage.method('error', function(meta) {
   var meta = meta || this.meta();
-  if (this.transmitted(meta) > (meta.quota || 0)) return errors.QUOTA_EXCEEDED;
+  if (this.transmitted(meta) > (meta.quota || 0)) {
+    return errors.QUOTA_EXCEEDED;
+  }
   if (meta.state && meta.state != 'active') {
     return errors.create('ACCOUNT_STATE', meta.state);
   }
