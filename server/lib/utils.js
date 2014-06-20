@@ -141,7 +141,7 @@ Utils.method('waitWhileLocked', function(path, wait, stale) {
   while (this.exists(lockfile)) {
     locktime = this.time() - parseInt(this.readFile(lockfile));
     if (locktime > wait && locktime < stale) {
-      errors.raise('LOCKED_FILE_AT', path);
+      throw errors.create('LOCKED_FILE_AT', path);
     }
   }
 });

@@ -3,6 +3,7 @@
 var assert = require('chai').assert
   , env = require('../../server/lib/env')('test')
   , utils = require('../../server/lib/utils')
+  , errors = require('../../server/lib/errors')
   , Usage = require('../../server/lib/usage')
   , $usage;
 
@@ -45,12 +46,18 @@ describe('Usage', function() {
     });
   });
 
-  describe('exceeded', function() {
-    it('should say whether the quota is exceeded', function(done) {
+  describe('error', function() {
+    it('should say when the quota is exceeded', function(done) {
       $usage.quota(245);
-      assert.isTrue($usage.exceeded());
+      assert.equal($usage.error().message, errors.QUOTA_EXCEEDED.message);
       $usage.quota(246);
-      assert.isFalse($usage.exceeded());
+      assert.isNull($usage.error());
+      done();
+    });
+
+    it('should say when the state is not active', function(done) {
+      $usage.state('suspended');
+      assert.equal($usage.error().message, errors.create('ACCOUNT_STATE', 'suspended').message);
       done();
     });
   });

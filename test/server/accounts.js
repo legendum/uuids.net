@@ -33,14 +33,14 @@ describe('accounts', function() {
     });
   });
 
-  describe('checkQuota', function() {
+  describe('checkUsage', function() {
     it('should check the account quota', function(done) {
       $account.usageObject.quota(-1); // negative quota to check we exceed it
-      $account.checkQuota(function(err, account) {
+      $account.checkUsage(function(err, account) {
         assert.equal(err.error, errors.QUOTA_EXCEEDED.error);
         assert.equal(account, null);
         $account.usageObject.quota(1000000); // positive quota to check we don't
-        $account.checkQuota(function(err, account) {
+        $account.checkUsage(function(err, account) {
           assert.isNull(err);
           assert.isTrue(utils.isUuid(account.uuid));
           done();

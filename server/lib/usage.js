@@ -11,10 +11,11 @@
  * stored() - Get the total number of bytes stored
  * total() - Get the total number of bytes used (input + output + stored)
  * quota() - Get/set the quota for the total bytes (input + output + stored)
- * exceeded() - Returns whether the total is greater than the quota
+ * error() - Returns an error message if the quota is exceeded or if suspended
  */
 
-var utils = require('./utils')
+var errors = require('./errors')
+  , utils = require('./utils')
   , Info = require('./info')
   , MSECS_IN_DAY = 86400000
   , DAYS_IN_YEAR = 365
@@ -55,9 +56,13 @@ Usage.method('accountForStorage', function() {
   this.meta(meta);
 });
 
-Usage.method('exceeded', function() {
-  var bytes = this.meta();
-  return this.total(bytes) > (bytes.quota || 0);
+Usage.method('error', function() {
+  var meta = this.meta();
+  if (this.total(meta) > (meta.quota || 0)) return errors.QUOTA_EXCEEDED;
+  if (meta.state && meta.state != 'active') {
+    return errors.create('ACCOUNT_STATE', meta.state);
+  }
+  return null;
 });
 
 Usage.method('total', function(bytes) {

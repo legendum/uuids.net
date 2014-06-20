@@ -9,6 +9,7 @@ var util = require('util') // that's the *node* utility library, not ours
   , ERRORS = {
       ACCOUNT_EXISTS: ["Account already exists", HttpStatus.FORBIDDEN]
     , ACCOUNT_MISMATCH: ["Account does not exist or password is incorrect", HttpStatus.FORBIDDEN]
+    , ACCOUNT_STATE: ["Account state is '%s'", HttpStatus.FORBIDDEN]
     , BAD_PARAMETERS: ["Oops, bad parameters", HttpStatus.BAD_REQUEST]
     , BUCKET_EXISTS: ["Bucket already exists", HttpStatus.FORBIDDEN]
     , BUCKET_MISSING: ["Bucket does not exist", HttpStatus.NOT_FOUND]
@@ -44,15 +45,15 @@ function Errors() {
     this[error].code = code;
   }
 
-  // The "raise" method allows us to interpolate strings into the error message
-  this.raise = function(error) {
+  // The "create" method allows us to interpolate strings into the error message
+  this.create = function(error) {
     var args = [].splice.call(arguments, 1)
       , err = my[error]
       , code = err.code;
     args.unshift(err.message);
     err = new Error(util.format.apply(util, args));
     err.code = code;
-    throw err;
+    return err;
   };
 }
 module.exports = new Errors();

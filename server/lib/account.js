@@ -35,10 +35,9 @@ Account.DEFAULT_QUOTA = DEFAULT_QUOTA;
 Info.properties(Account, PROPERTIES);
 module.exports = Account;
 
-Account.method('checkQuota', function(next) {
-  if (this.usageObject.exceeded()) {
-    return next(errors.QUOTA_EXCEEDED);
-  }
+Account.method('checkUsage', function(next) {
+  var error = this.usageObject.error();
+  if (error) return next(error);
   next(null, this);
 });
 

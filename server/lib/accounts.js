@@ -53,7 +53,7 @@ Accounts.method('access', function(nameDigest, sessionPartKey, next) {
   if (!secretKey) return next(errors.SESSION_EXPIRED);
   new Account(secretKey, function(err, account) {
     if (err) return next(err);
-    account.checkQuota(next);
+    account.checkUsage(next);
   });
 });
 
