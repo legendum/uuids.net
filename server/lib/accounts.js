@@ -52,8 +52,7 @@ Accounts.method('access', function(nameDigest, sessionPartKey, next) {
     , secretKey = sessions.access(sessionPartKey);
   if (!secretKey) return next(errors.SESSION_EXPIRED);
   new Account(secretKey, function(err, account) {
-    if (err) return next(err);
-    account.checkUsage(next);
+    next(err, account);
   });
 });
 

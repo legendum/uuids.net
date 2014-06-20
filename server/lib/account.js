@@ -35,12 +35,6 @@ Account.DEFAULT_QUOTA = DEFAULT_QUOTA;
 Info.properties(Account, PROPERTIES);
 module.exports = Account;
 
-Account.method('checkUsage', function(next) {
-  var error = this.usageObject.error();
-  if (error) return next(error);
-  next(null, this);
-});
-
 Account.method('bucketUuid', function(bucketName, uuid) {
   if (uuid || uuid === false) {
     this.set(this.uuid + bucketName, uuid);

@@ -7,13 +7,16 @@ var assert = require('chai').assert
   , accounts = require('../../server/lib/accounts')
   , sessions = require('../../server/lib/sessions');
 
-var $session, $account;
+var $name = 'kevin'
+  , $password = 'TopSecret'
+  , $session
+  , $account;
 
 describe('accounts', function() {
 
   describe('create', function() {
     it('should create an account', function(done) {
-      accounts.create(utils.digest('kevin'), utils.digest('TopSecret'), function(err, uuid) {
+      accounts.create(utils.digest($name), utils.digest($password), function(err, uuid) {
         $session = uuid;
         assert.isNull(err);
         assert.isTrue(utils.isUuid(uuid));
@@ -24,7 +27,7 @@ describe('accounts', function() {
 
   describe('access', function() {
     it('should access an account', function(done) {
-      accounts.access('kevin', $session, function(err, account) {
+      accounts.access($name, $session, function(err, account) {
         assert.isNull(err);
         assert.ok(account);
         $account = account; // for the test cases below
@@ -33,14 +36,29 @@ describe('accounts', function() {
     });
   });
 
-  describe('checkUsage', function() {
+  describe('handle quota and state errors', function() {
     it('should check the account quota', function(done) {
-      $account.usageObject.quota(-1); // negative quota to check we exceed it
-      $account.checkUsage(function(err, account) {
+      $account.usageObject.quota(10);
+      $account.usageObject.writeBytes(1000);
+      accounts.access($name, $session, function(err, account) {
         assert.equal(err.error, errors.QUOTA_EXCEEDED.error);
         assert.equal(account, null);
-        $account.usageObject.quota(1000000); // positive quota to check we don't
-        $account.checkUsage(function(err, account) {
+        $account.usageObject.quota(100000);
+        accounts.access($name, $session, function(err, account) {
+          assert.isNull(err);
+          assert.isTrue(utils.isUuid(account.uuid));
+          done();
+        });
+      });
+    });
+
+    it('should check the account state', function(done) {
+      $account.usageObject.state('suspended');
+      accounts.access($name, $session, function(err, account) {
+        assert.match(err.message, /suspended/);
+        assert.equal(account, null);
+        $account.usageObject.state('active');
+        accounts.access($name, $session, function(err, account) {
           assert.isNull(err);
           assert.isTrue(utils.isUuid(account.uuid));
           done();
@@ -109,7 +127,7 @@ describe('accounts', function() {
 
   describe('delete', function() {
     it('should delete an account', function(done) {
-      accounts.delete(utils.digest('kevin'), utils.digest('TopSecret'), function(err, result) {
+      accounts.delete(utils.digest($name), utils.digest($password), function(err, result) {
         assert.notOk(err);
         assert.isTrue(result);
         done();
