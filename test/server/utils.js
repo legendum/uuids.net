@@ -111,7 +111,7 @@ describe('utils', function() {
     it('should wait while a file is locked', function() {
       assert.throws(function() {
         utils.waitWhileLocked($filepath);
-      }, "Locked file at '" + $filepath + "'");
+      }, "Locked file at '..." + $filepath.substr($filepath.length - 10) + "'");
     });
 
     it('should unlock a file', function() {

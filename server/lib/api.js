@@ -142,7 +142,7 @@ API.method('createResponse', function(action, useBasicAuth, jsonRoot) {
         res.send(HttpStatus.OK, data);
         return next(false);
       });
-    } catch(err) {
+    } catch (err) {
       sendError(res, err, next);
     }
   };

@@ -5,7 +5,7 @@ var assert = require('chai').assert
   , utils = require('../../server/lib/utils')
   , File = require('../../server/lib/file')
 
-var $file, $share;
+var $file;
 
 describe('File', function() {
   var filename = 'gherkins';

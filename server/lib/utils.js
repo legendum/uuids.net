@@ -52,24 +52,24 @@ Utils.method('digestKey', function(data) {
   return this.digest(data, 'sha256', 'none'); // for "encrypt" and "decrypt"
 });
 
-Utils.method('exists', function(path) {
-  return path && fs.existsSync(path);
+Utils.method('exists', function(filepath) {
+  return filepath && fs.existsSync(filepath);
 });
 
-Utils.method('folderize', function(path) {
-  if (!path) return;
-  var dirs = path.split('/')
+Utils.method('folderize', function(filepath) {
+  if (!filepath) return;
+  var dirs = filepath.split('/')
     , file = dirs.pop();
   if (file.length < 36) { // digest filenames are 40 hex characters and UUIDs 36
-    path = dirs.join('/');
+    filepath = dirs.join('/');
   } else {
     for (var i = 1; i <= 2; i++) {
       dirs.push(file.substr(0, i*2));
-      path = dirs.join('/');
-      if (!fs.existsSync(path)) fs.mkdirSync(path, 0755);
+      filepath = dirs.join('/');
+      if (!fs.existsSync(filepath)) fs.mkdirSync(filepath, 0755);
     }
   }
-  return path + '/' + file;
+  return filepath + '/' + file;
 });
 
 Utils.method('scrypt', function(data, next) {
@@ -110,52 +110,54 @@ Utils.method('decrypt', function(data, key) {
   return decoded;
 });
 
-Utils.method('readFile', function(path) {
-  return fs.readFileSync(path, 'utf8');
+Utils.method('readFile', function(filepath) {
+  return fs.readFileSync(filepath, 'utf8');
 });
 
 Utils.method('reverse', function(str) {
   return str.split('').reverse().join('');
 });
 
-Utils.method('stat', function(path) {
-  if (fs.existsSync(path)) return fs.statSync(path);
+Utils.method('stat', function(filepath) {
+  if (fs.existsSync(filepath)) return fs.statSync(filepath);
 });
 
 Utils.method('time', function() {
   return (new Date).getTime(); // milliseconds since 00:00:00 on 1/1/1970
 });
 
-Utils.method('lock', function(path, wait, stale) {
-  var lockfile = path + LOCK_EXT;
+Utils.method('lock', function(filepath, wait, stale) {
+  var lockfile = filepath + LOCK_EXT;
   this.waitWhileLocked(lockfile, wait, stale);
   this.writeFile(lockfile, this.time());
 });
 
-Utils.method('waitWhileLocked', function(path, wait, stale) {
-  var lockfile = path + LOCK_EXT
+Utils.method('waitWhileLocked', function(filepath, wait, stale) {
+  var lockfile = filepath + LOCK_EXT
     , locktime;
   wait = wait || LOCK_WAIT;
   stale = stale || LOCK_STALE;
-  // And here's where my Node-fu finally failed me :-(
+  // And here's where my Node-fu finally failed me.
+  // It seems wrong, but in practice it works well.
   while (this.exists(lockfile)) {
     locktime = this.time() - parseInt(this.readFile(lockfile));
     if (locktime > wait && locktime < stale) {
-      throw errors.create('LOCKED_FILE_AT', path);
+      throw errors.create('LOCKED_FILE_AT', // never return the whole file name!
+                          '...' + filepath.substr(filepath.length - 10));
     }
   }
 });
 
-Utils.method('isLocked', function(path) {
-  return this.exists(path + LOCK_EXT);
+Utils.method('isLocked', function(filepath) {
+  return this.exists(filepath + LOCK_EXT);
 });
 
-Utils.method('unlock', function(path) {
-  this.unlink(path + LOCK_EXT);
+Utils.method('unlock', function(filepath) {
+  this.unlink(filepath + LOCK_EXT);
 });
 
-Utils.method('unlink', function(path) {
-  if (fs.existsSync(path)) fs.unlinkSync(path);
+Utils.method('unlink', function(filepath) {
+  if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
 });
 
 Utils.method('unwrap', function(data, key) {
@@ -184,6 +186,6 @@ Utils.method('wrap', function(data, key) {
   return this.encrypt(JSON.stringify(data), key);
 });
 
-Utils.method('writeFile', function(path, data) {
-  fs.writeFileSync(path, data, 'utf8');
+Utils.method('writeFile', function(filepath, data) {
+  fs.writeFileSync(filepath, data, 'utf8');
 });

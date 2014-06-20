@@ -18,6 +18,16 @@ function Archive() {
 }
 module.exports = new Archive();
 
+function nextTick(next) {
+  process.nextTick(function() {
+    try {
+      next(null);
+    } catch (err) { // e.g. a locked file
+      next(err);
+    }
+  });
+}
+
 function aws(archive, method, filepath, next) {
   var bucket = env.UUIDS_BUCKET_NAME
     , filename = path.basename(filepath)
@@ -34,7 +44,7 @@ function aws(archive, method, filepath, next) {
       next(null);
     });
   } else {
-    process.nextTick(function() { next(null) });
+    nextTick(next);
   }
 }
 
@@ -55,7 +65,7 @@ Archive.method('restore', function(filepath, next) {
     , wstream;
 
   if (utils.exists(filepath) || this.restored(filename) || !env.AWS_PROFILE) {
-    process.nextTick(function() { next(null) });
+    nextTick(next);
   } else { // no file, and no restore attempt made, and we have an AWS profile
     wstream = null;
     utils.lock(filepath);
