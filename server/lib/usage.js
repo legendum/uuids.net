@@ -17,8 +17,9 @@
 var errors = require('./errors')
   , utils = require('./utils')
   , Info = require('./info')
-  , MSECS_IN_DAY = 86400000
+  , ACTIVE_STATE = 'active'
   , DAYS_IN_YEAR = 365
+  , MSECS_IN_DAY = 86400000
   , PROPERTIES = ['input', 'output', 'stored', 'quota', 'state', 'updated'];
 
 // Because usage objects are frequently created, we offer two constructors:
@@ -44,7 +45,7 @@ Usage.method('accountForStorage', function() {
   var meta = this.meta()
     , now = utils.time()
     , msecs;
-  meta.state = meta.state || 'active';
+  meta.state = meta.state || ACTIVE_STATE;
   meta.updated = meta.updated || now;
   if (meta.quota && meta.stored) {
     // In one year, the quota is reduced by the amount of data stored in bytes
@@ -59,7 +60,7 @@ Usage.method('accountForStorage', function() {
 Usage.method('error', function() {
   var meta = this.meta();
   if (this.total(meta) > (meta.quota || 0)) return errors.QUOTA_EXCEEDED;
-  if (meta.state && meta.state != 'active') {
+  if (meta.state && meta.state != ACTIVE_STATE) {
     return errors.create('ACCOUNT_STATE', meta.state);
   }
   return null;
