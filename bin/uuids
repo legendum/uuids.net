@@ -140,7 +140,6 @@ var UUIDS = (function(cmd) {
   try {
     commands[cmd]();
   } catch(e) {
-console.log(e);
     usage();
   }
 })(argv._[0]);
