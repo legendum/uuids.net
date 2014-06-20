@@ -18,7 +18,7 @@ var utils = require('./utils')
   , Info = require('./info')
   , MSECS_IN_DAY = 86400000
   , DAYS_IN_YEAR = 365
-  , PROPERTIES = ['created', 'input', 'output', 'stored', 'quota', 'updated'];
+  , PROPERTIES = ['input', 'output', 'stored', 'quota', 'state', 'updated'];
 
 // Because usage objects are frequently created, we offer two constructors:
 // a "create from archive" version and a faster "create from local store"
@@ -43,7 +43,7 @@ Usage.method('accountForStorage', function() {
   var meta = this.meta()
     , now = utils.time()
     , msecs;
-  meta.created = meta.created || now;
+  meta.state = meta.state || 'active';
   meta.updated = meta.updated || now;
   if (meta.quota && meta.stored) {
     // In one year, the quota is reduced by the amount of data stored in bytes
