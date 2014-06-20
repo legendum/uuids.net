@@ -7,16 +7,17 @@ var assert = require('chai').assert
   , Bucket = require('../../server/lib/bucket')
   , shares = require('../../server/lib/shares');
 
-var $bucket, $filename, $share, $usage;
+var $bucket, $filename, $share, $usageObject;
 
 describe('Bucket', function() {
   $filename = 'gherkins';
 
   describe('createFile', function() {
     it('should create a file in a bucket', function(done) {
-      $usage = utils.uuid();
+      $usageObject = new Usage(utils.uuid());
+      $usageObject.quota(1000000);
       new Bucket(utils.uuid(), function(err, bucket) {
-        bucket.usage($usage);
+        bucket.usage($usageObject.uuid);
         assert.isNull(err);
         $bucket = bucket;
         $bucket.createFile($filename, function(err, file) {
@@ -148,8 +149,7 @@ describe('Bucket', function() {
     it('should destroy a bucket', function(done) {
       $bucket.destroy(function(err) {
         assert.notOk(err);
-        var usage = new Usage($usage);
-        usage.destroy();
+        $usageObject.destroy();
         done();
       });
     });

@@ -9,6 +9,8 @@ var IP_ADDRESS = '0.0.0.0'
 process.env.UUIDS_ENV = UUIDS_ENV; // to run the UUIDs server in test mode
 
 var path = require('path')
+  , exec = require('child_process').exec
+  , asyncblock = require('asyncblock')
   , assert = require('chai').assert
   , unirest = require('unirest')
   , env = require('../../server/lib/env')(UUIDS_ENV)
@@ -401,6 +403,38 @@ describe('server', function() {
     })
   });
 
+  describe('suspend and activate an account', function() {
+    var uuidsCmd = path.join(__dirname, '../../bin/uuids')
+      , result;
+    it('should suspend an account', function(done) {
+      asyncblock(function(flow) {
+        exec([uuidsCmd, 'suspend', $shareFileUuid].join(' '), flow.add());
+        result = flow.wait();
+        assert.match(result, /is now suspended/);
+        unirest.get(URL + 'shared/file/' + $shareFileUuid)
+          .end(function(response) {
+            var result = response.body;
+            assert.ok(result.error);
+            assert.match(result.error, /suspended/);
+            done();
+          });
+      });
+    });
+
+    it('should activate an account', function(done) {
+      asyncblock(function(flow) {
+        exec([uuidsCmd, 'activate', $shareFileUuid].join(' '), flow.add());
+        result = flow.wait();
+        unirest.get(URL + 'shared/file/' + $shareFileUuid)
+          .end(function(response) {
+            var result = response.body;
+            assert.isTrue(result.length > 100);
+            done();
+          });
+      });
+    });
+  });
+
   describe('GET /shared/file/$shareFileUuid/$key', function() {
     it('should get a shared file key', function(done) {
       unirest.get(URL + 'shared/file/' + $shareFileUuid + '/a')
@@ -481,10 +515,8 @@ describe('server', function() {
         .auth($nameDigest, $session)
         .end(function(response) {
           var result = response.body
-            , usage = result.usage
-            , total = usage.stored + usage.input + usage.output;
-          assert.isTrue(usage.total > 1000);
-          assert.equal(usage.total, total);
+            , usage = result.usage;
+          assert.isTrue(usage.stored > 1000);
           $quota = usage.quota;
           done();
         });
@@ -498,7 +530,7 @@ describe('server', function() {
         .end(function(response) {
           var result = response.body
             , usage = result.usage;
-          assert.isTrue(usage.total > 1000);
+          assert.isTrue(usage.stored > 1000);
           assert.isTrue(usage.quota > $quota + bytes - TINY_STORAGE_CHARGE);
           done();
         });

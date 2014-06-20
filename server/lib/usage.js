@@ -9,7 +9,7 @@
  * input() - Get the total number of bytes written
  * output() - Get the total number of bytes read
  * stored() - Get the total number of bytes stored
- * total() - Get the total number of bytes used (input + output + stored)
+ * transmitted() - Get the total number of bytes transmitted (input + output)
  * quota() - Get/set the quota for the total bytes (input + output + stored)
  * error() - Returns an error message if the quota is exceeded or if suspended
  */
@@ -29,8 +29,8 @@ function Usage(uuid, next) {
   var usage = this;
   if (next) {
     this.createFromArchive(uuid, function(err) {
-      usage.accountForStorage();
-      next(err, usage);
+      var meta = usage.accountForStorage();
+      next(err, usage, meta);
     });
   } else {
     this.create(uuid);
@@ -51,49 +51,51 @@ Usage.method('accountForStorage', function() {
     msecs = now - meta.updated;
     meta.quota = meta.quota -
                  parseInt(meta.stored * msecs / MSECS_IN_DAY / DAYS_IN_YEAR);
+    if (meta.quota < 0) meta.quota = 0;
   }
   meta.updated = now;
   this.meta(meta);
+  return meta;
 });
 
-Usage.method('error', function() {
-  var meta = this.meta();
-  if (this.total(meta) > (meta.quota || 0)) return errors.QUOTA_EXCEEDED;
+Usage.method('error', function(meta) {
+  var meta = meta || this.meta();
+  if (this.transmitted(meta) > (meta.quota || 0)) return errors.QUOTA_EXCEEDED;
   if (meta.state && meta.state != 'active') {
     return errors.create('ACCOUNT_STATE', meta.state);
   }
   return null;
 });
 
-Usage.method('total', function(bytes) {
-  var bytes = bytes || this.meta();
-  return (bytes.input || 0) + (bytes.output || 0) + (bytes.stored || 0);
+Usage.method('transmitted', function(meta) {
+  var meta = meta || this.meta();
+  return (meta.input || 0) + (meta.output || 0);
 });
 
 Usage.method('writeBytes', function(bytesWritten) {
-  var bytes = this.meta();
-  bytes.input = bytes.input || 0;
+  var meta = this.meta();
+  meta.input = meta.input || 0;
   if (bytesWritten > 0) {
-    bytes.input += bytesWritten;
-    this.meta(bytes);
+    meta.input += bytesWritten;
+    this.meta(meta);
   }
-  return bytes.input;
+  return meta.input;
 });
 
 Usage.method('readBytes', function(bytesRead) {
-  var bytes = this.meta();
-  bytes.output = bytes.output || 0;
+  var meta = this.meta();
+  meta.output = meta.output || 0;
   if (bytesRead > 0) {
-    bytes.output += bytesRead;
-    this.meta(bytes);
+    meta.output += bytesRead;
+    this.meta(meta);
   }
-  return bytes.output;
+  return meta.output;
 });
 
 Usage.method('storeBytes', function(sizeDiffInBytes) {
-  var bytes = this.meta();
-  bytes.stored = bytes.stored || 0;
-  bytes.stored += sizeDiffInBytes;
-  this.meta(bytes);
-  return bytes.stored;
+  var meta = this.meta();
+  meta.stored = meta.stored || 0;
+  meta.stored += sizeDiffInBytes;
+  this.meta(meta);
+  return meta.stored;
 });

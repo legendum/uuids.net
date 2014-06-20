@@ -31,7 +31,7 @@ describe('Usage', function() {
       assert.equal(undefined, $usage.input());
       $usage.writeBytes(123);
       assert.equal(123, $usage.input());
-      assert.equal(123, $usage.total());
+      assert.equal(123, $usage.transmitted());
       done();
     });
   });
@@ -41,7 +41,7 @@ describe('Usage', function() {
       assert.equal(undefined, $usage.output());
       $usage.readBytes(123);
       assert.equal(123, $usage.output());
-      assert.equal(246, $usage.total());
+      assert.equal(246, $usage.transmitted());
       done();
     });
   });
@@ -68,7 +68,7 @@ describe('Usage', function() {
       assert.equal(123, $usage.input());
       assert.equal(123, $usage.output());
       assert.equal(100, $usage.stored());
-      assert.equal(100 + 123 + 123, $usage.total());
+      assert.equal(123 + 123, $usage.transmitted()); // storage is not included
       done();
     });
   });

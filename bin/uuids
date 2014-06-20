@@ -4,15 +4,16 @@ var USAGE = [
   'usage: uuids <cmd> --port=80',
   '',
   '...where <cmd> is a command from:',
-  'start:   Start the UUIDs server on the specified port',
-  'archive: Save a file to the archive (requires <file> arg)',
-  'restore: Restore a file from the archive (use <file> arg)',
-  'suspend: Suspend a share\'s account (use <share> arg)',
-  'invite:  Create an invitation code for a new account',
-  'keygen:  Generate a public/private keypair for UUIDs',
-  'quota:   Create a new quota for an account to claim',
-  'test:    Run all the tests',
-  'usage:   Display this message',
+  'start:    Start the UUIDs server on the specified port',
+  'archive:  Save a file to the archive (requires <file> arg)',
+  'restore:  Restore a file from the archive (use <file> arg)',
+  'suspend:  Suspend a share\'s account (use <share> arg)',
+  'activate: Activate a share\'s account (use <share> arg)',
+  'invite:   Create an invitation code for a new account',
+  'keygen:   Generate a public/private keypair for UUIDs',
+  'quota:    Create a new quota for an account to claim',
+  'test:     Run all the tests',
+  'usage:    Display this message',
   ''
 ].join("\n");
 
@@ -25,7 +26,8 @@ var argv = require('yargs').argv
   , invites = require('../server/lib/invites')
   , quotas = require('../server/lib/quotas')
   , shares = require('../server/lib/shares')
-  , utils = require('../server/lib/utils');
+  , utils = require('../server/lib/utils')
+  , File = require('../server/lib/file');
 
 var UUIDS = (function(cmd) {
 
@@ -35,6 +37,7 @@ var UUIDS = (function(cmd) {
 
   function system(cmd) {
     asyncblock(function(flow){
+      var result;
       exec(cmd, flow.add());
       result = flow.wait();
       console.log(result); 
@@ -70,17 +73,26 @@ var UUIDS = (function(cmd) {
     }
   }
 
+  function setUsageState(uuidSharedPart, state) {
+    var uuid = shares.access(uuidSharedPart)
+    if (!uuid) return false;
+    new File(uuid, function(err, file) {
+      if (err && !err.message.match(/suspended/)) utils.quit(err);
+      file.usageObject().state(state);
+      utils.quit("account owning share %s is now %s", uuidSharedPart, state);
+    });
+    return true;
+  }
+
   function suspendAccount() {
-    var uuidSharedPart = argv._[1]
-      , uuid = shares.access(uuidSharedPart)
-    if (uuid) {
-      new File(uuid, function(err, file) {
-        if (err) utils.quit(err);
-        file.usageObject().state('suspended');
-        utils.quit("suspended the account that owns share %s", uuidSharedPart);
-      });
-    } else {
+    if (!setUsageState(argv._[1], 'suspended')) {
       utils.quit("usage: uuids suspend <share>");
+    }
+  }
+
+  function activateAccount() {
+    if (!setUsageState(argv._[1], 'active')) {
+      utils.quit("usage: uuids activate <share>");
     }
   }
 
@@ -117,6 +129,7 @@ var UUIDS = (function(cmd) {
   , archive: archiveFile
   , restore: restoreFile
   , suspend: suspendAccount
+  , activate: activateAccount
   , invite: invite
   , keygen: keygen
   , quota: quota
@@ -127,6 +140,7 @@ var UUIDS = (function(cmd) {
   try {
     commands[cmd]();
   } catch(e) {
+console.log(e);
     usage();
   }
 })(argv._[0]);

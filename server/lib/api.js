@@ -189,7 +189,6 @@ API.method('quota', function(params, next) {
     if (!quotaToAdd) return next(errors.QUOTA_MISSING);
     account.usageObject.quota(account.usageObject.quota() + quotaToAdd);
     usage = account.usageObject.meta();
-    usage.total = account.usageObject.total();
     next(null, usage);
   });
 });
@@ -199,7 +198,6 @@ API.method('usage', function(params, next) {
     var usage;
     if (err) return next(err);
     usage = account.usageObject.meta();
-    usage.total = account.usageObject.total();
     next(null, usage);
   });
 });

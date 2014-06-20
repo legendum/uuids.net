@@ -131,8 +131,8 @@ describe('api', function() {
     });
   });
 
-  describe('sharedFile', function() {
-    it('should shared a file', function(done) {
+  describe('shareBucketFile', function() {
+    it('should share a bucket file', function(done) {
       api.shareBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename}, function(err, result) {
         $uuidSharedPart = result.bucket.share.uuid;
         assert.isTrue(utils.isUuid($uuidSharedPart));

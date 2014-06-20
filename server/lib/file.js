@@ -35,8 +35,9 @@ function File(uuid, next) {
     if (err) return next(err);
     if (!file.secret()) file.secret(utils.uuid()); // used to store file content
     if (file.usage()) {
-      new Usage(file.usage(), function(err, usageObject) {
-        next(null, file);
+      new Usage(file.usage(), function(err, usageObject, meta) {
+        var error = usageObject.error(meta);
+        next(error, file);
       });
     } else {
       next(null, file);
