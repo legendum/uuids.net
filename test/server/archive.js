@@ -7,7 +7,7 @@ var assert = require('chai').assert
   , utils = require('../../server/lib/utils')
   , archive = require('../../server/lib/archive')
   , $filename = 'README.md'
-  , $filepath = path.join(env.UUIDS_ROOT, $filename);
+  , $filepath = path.join(__dirname, '../..', $filename);
 
 describe('archive', function() {
 
