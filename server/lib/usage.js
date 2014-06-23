@@ -9,7 +9,7 @@
  * input() - Get the total number of bytes written
  * output() - Get the total number of bytes read
  * stored() - Get the total number of bytes stored
- * transmitted() - Get the total number of bytes transmitted (input + output)
+ * transferred() - Get the total number of bytes transferred (input + output)
  * quota() - Get/set the quota for the total bytes (input + output + stored)
  * error() - Returns an error message if the quota is exceeded or if suspended
  */
@@ -62,7 +62,7 @@ Usage.method('accountForStorage', function() {
 
 Usage.method('error', function(meta) {
   var meta = meta || this.meta();
-  if (this.transmitted(meta) > (meta.quota || 0)) {
+  if (this.transferred(meta) > (meta.quota || 0)) {
     return errors.QUOTA_EXCEEDED;
   }
   if (meta.state && meta.state != 'active') {
@@ -71,7 +71,7 @@ Usage.method('error', function(meta) {
   return null;
 });
 
-Usage.method('transmitted', function(meta) {
+Usage.method('transferred', function(meta) {
   var meta = meta || this.meta();
   return (meta.input || 0) + (meta.output || 0);
 });
