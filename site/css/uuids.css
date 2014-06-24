@@ -11,10 +11,6 @@ a:hover {
   text-decoration: underline;
 }
 
-h2 {
-  color: #222;
-}
-
 fieldset {
   border-radius: 10px;
   background-color: #ddd;
@@ -54,8 +50,9 @@ fieldset {
 }
 
 .content p {
+  color: #555;
   text-align: justify;
-  line-height: 25px;
+  line-height: 27px;
 }
 
 .callout p {
