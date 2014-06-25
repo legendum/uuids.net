@@ -17,6 +17,10 @@ fieldset {
   padding-bottom: 0px;
 }
 
+.centered {
+  text-align: center;
+}
+
 .hidden {
   display: none;
 }
@@ -25,6 +29,10 @@ fieldset {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #fff;
+}
+
+a.button:hover {
+  text-decoration: none;
 }
 
 #surround {
@@ -73,7 +81,7 @@ fieldset {
   margin-top: 36px;
 }
 
-#header #login {
+#header #login-button, #header #logout-button {
   position: absolute;
   top: 20px;
   right: 30px;

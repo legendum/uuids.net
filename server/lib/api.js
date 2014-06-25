@@ -23,7 +23,7 @@ var restify = require('restify')
   , ROUTES = {
       // HTTP method, the path, the parameter list when using POST and JSON root
       signup: ['POST', '/signup', ['nameDigest', 'passwordDigest', 'invitation'], 'session']
-    , signin: ['POST', '/signin', ['nameDigest', 'passwordDigest'], 'session']
+    , login: ['POST', '/login', ['nameDigest', 'passwordDigest'], 'session']
     , changePassword: ['POST', '/password',  ['nameDigest', 'passwordDigest', 'newPasswordDigest'], 'session']
     , logout: ['POST', '/logout', BASIC_AUTH, 'ok']
     , quota: ['GET', '/quota/:quotaUuid', BASIC_AUTH, 'usage']
@@ -175,8 +175,8 @@ API.method('signup', function(params, next) {
   }
 });
 
-API.method('signin', function(params, next) {
-  accounts.signin(params.nameDigest, params.passwordDigest, next);
+API.method('login', function(params, next) {
+  accounts.login(params.nameDigest, params.passwordDigest, next);
 });
 
 API.method('changePassword', function(params, next) {

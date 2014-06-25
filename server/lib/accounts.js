@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Accounts - manage account lifecycle (create, signin, access, logout, delete)
+ * Accounts - manage account lifecycle (create, login, access, logout, delete)
  */
 
 var Account = require('./account')
@@ -39,7 +39,7 @@ Accounts.method('delete', function(nameDigest, passwordDigest, next) {
   });
 });
 
-Accounts.method('signin', function(nameDigest, passwordDigest, next) {
+Accounts.method('login', function(nameDigest, passwordDigest, next) {
   secrets.access(nameDigest, passwordDigest, function(err, secretKey) {
     if (err) next(err);
     var sessionPartKey = sessions.create(secretKey);

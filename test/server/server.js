@@ -70,9 +70,9 @@ describe('server', function() {
     });
   });
 
-  describe('POST /signin', function() {
-    it('should signin a user', function(done) {
-      unirest.post(URL + 'signin')
+  describe('POST /login', function() {
+    it('should login a user', function(done) {
+      unirest.post(URL + 'login')
         .field('nameDigest', $nameDigest)
         .field('passwordDigest', $passwordDigest)
         .end(function(response) {

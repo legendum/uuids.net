@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+<head>
+  <title>UUIDs.net</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" type="image/png" href="../img/uuids-logo.png">
+  <link type="text/css" rel="stylesheet" href="../css/normalize.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation.min.css">
+  <link type="text/css" rel="stylesheet" href="../css/uuids.css">
+
+  <script type="text/javascript" src="../js/vendor/modernizr.js"></script>
+  <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../js/foundation.min.js"></script>
+  <script type="text/javascript" src="../js/foundation/foundation.reveal.js"></script>
+  <script type="text/javascript" src="../js/vendor/sha256.js"></script>
+  <script type="text/javascript" src="../js/uuids.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    uuids.init();
+  });
+  </script>
+</head>
+<body>
+  <div id="surround">
+    <a href="/"><img id="logo" src="/img/uuids-logo.png" alt="UUIDs"></a>
+    <div id="header" class="row">
+      <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
+      <a href="#" id="logout-button" class="button hidden">Log out</a>
+      <div id="title">UUIDs.net</div>
+    </div>
+    <div id="page" class="row">
+      <div class="medium-8 columns">
+        <div class="content">
+        </div>
+      </div>
+      <div class="medium-4 columns">
+        <div class="content">
+        </div>
+      </div>
+    </div>
+    <div id="footer" class="row">
+      <div class="medium-12 columns">
+        <div class="content">
+          Copyright &copy; 2014 Kevin Hutchinson. Licensed under the <a target="agpl" href="http://www.gnu.org/licenses/agpl-3.0.html">AGPL V3 License</a>.
+          By using <a href="https://uuids.net/">UUIDs.net</a> you accept our <a href="legal.html">terms &amp; conditions</a>.
+          Contact <a target="tweet" href="https://twitter.com/uuids">@UUIDs</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal" class="reveal-modal small" data-reveal>
+    <h3>Login</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <form id="login-form" method="post"><fieldset>
+      <div class="row hidden alerter">
+        <div class="small-12 columns">
+          <div data-alert class="alert-box"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Account name
+            <input name="name" type="text">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-12 columns">
+          <label>Password
+            <input name="password" type="password">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-10 columns">
+          <button id="login-button" class="button">Login</button>
+        </div>
+      </div>
+    </fieldset></form>
+    <p class="small-print centered">
+      Sorry, we cannot send password reset links or reminders.
+    </p>
+  </div>
+
+  <div id="new-bucket-modal" class="reveal-modal small" data-reveal>
+    <h3>Create new bucket</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <form id="new-bucket-form" method="post"><fieldset>
+      <div class="row hidden alerter">
+        <div class="small-12 columns">
+          <div data-alert class="alert-box"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Bucket name
+            <input name="name" type="text">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-10 columns">
+          <button id="new-bucket-button" class="button">Create bucket</button>
+        </div>
+      </div>
+    </fieldset></form>
+  </div>
+
+  <script type="text/javascript">
+    $(document).foundation();
+  </script>
+</body>
+</html>
