@@ -17,6 +17,10 @@ fieldset {
   padding-bottom: 0px;
 }
 
+.hidden {
+  display: none;
+}
+
 .button {
   padding: 10px;
   border-radius: 5px;

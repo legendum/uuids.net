@@ -10,6 +10,7 @@ var fs = require('fs')
   , path = require('path')
   , env = process.env
 
+  , asyncblock = require('asyncblock')
   , HttpStatus = require('http-status-codes')
 
   , Usage = require('./usage')
@@ -59,6 +60,23 @@ Content.method('downloadFile', function(file, res, next) {
         next();
       });
     });
+});
+
+Content.method('uploadMultiple', function(req, res, next) {
+  var my = this, reqFiles = req.files['files[]'];
+  if (!reqFiles) return next(errors.FILE_MISSING);
+  asyncblock(function(flow) {
+    var reqSingle;
+    for (var file in reqFiles) {
+      reqSingle = {
+        params: {filename: file.name}
+      , files:  {file: reqFiles[file]}
+      };
+      my.upload(reqSingle, res, flow.add());
+      flow.wait();
+    }
+  });
+  next(null, {ok: true});
 });
 
 Content.method('upload', function(req, res, next) {

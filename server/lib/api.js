@@ -37,6 +37,7 @@ var restify = require('restify')
     , getBucketFile: ['GET', '/bucket/:bucketName/file/:filename', BASIC_AUTH]
     , getBucketFileKey: ['GET', '/bucket/:bucketName/file/:filename/:key', BASIC_AUTH]
     , setBucketFileData: ['POST', '/bucket/:bucketName/file/:filename/data', BASIC_AUTH]
+    , uploadBucketFiles: ['POST', '/bucket/:bucketName/upload', BASIC_AUTH]
     , uploadBucketFile: ['POST', '/bucket/:bucketName/file/:filename', BASIC_AUTH]
     , renameBucketFile: ['POST', '/bucket/:bucketName/file/:filename/rename/:newFilename', BASIC_AUTH]
     , deleteBucketFile: ['POST', '/bucket/:bucketName/file/:filename/delete', BASIC_AUTH]
@@ -164,8 +165,11 @@ API.method('setupRoutes', function(server, next) {
 
 API.method('signup', function(params, next) {
   if (invites.access(params.invitation)) {
-    invites.delete(params.invitation);
-    accounts.create(params.nameDigest, params.passwordDigest, next);
+    accounts.create(params.nameDigest, params.passwordDigest, function(err, sessionPartKey) {
+      if (err) return next(err);
+      invites.delete(params.invitation); // successful, so delete the invitation
+      next(null, sessionPartKey);
+    });
   } else {
     next(errors.INVITATION_NEEDED);
   }
@@ -302,6 +306,13 @@ API.method('setBucketFileData', function(params, next) {
         });
       }
     });
+  });
+});
+
+// Note the file are created if they don't exist in the bucket.
+API.method('uploadBucketFiles', function(params, next) {
+  next(null, function(req, res, next2) {
+    content.uploadMultiple(req, res, next2);
   });
 });
 

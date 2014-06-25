@@ -16,8 +16,13 @@
   <script type="text/javascript" src="../js/vendor/modernizr.js"></script>
   <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
   <script type="text/javascript" src="../js/foundation.min.js"></script>
-  <!-- <script type="text/javascript" src="../js/peer.js"></script> -->
+  <script type="text/javascript" src="../js/vendor/sha256.js"></script>
   <script type="text/javascript" src="../js/uuids.js"></script>
+  <script type="text/javascript">
+  $(function() {
+    uuids.init();
+  });
+  </script>
 </head>
 <body>
   <div id="surround">
@@ -50,7 +55,12 @@
       <div class="medium-4 columns">
         <div class="content">
           <h3>Got an invitation?</h3>
-          <form><fieldset>
+          <form id="create-account" method="post"><fieldset>
+            <div id="alert" class="row hidden">
+              <div class="small-12 columns">
+                <div id="message" data-alert class="alert-box alert"></div>
+              </div>
+            </div>
             <div class="row">
               <div class="small-12 columns">
                 <label>Account name
@@ -74,7 +84,7 @@
             </div>
             <div class="row">
               <div class="small-10 columns">
-                <button name="signup" class="button">Create account</button>
+                <button class="button">Create account</button>
               </div>
             </div>
           </fieldset></form>
