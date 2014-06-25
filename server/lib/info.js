@@ -113,6 +113,18 @@ Info.method('unset', function(key, cryptor) {
   this.store.deleteWrapped(this.uuid + key, cryptor)
 });
 
+Info.method('objectUuid', function(name, uuid) {
+  var key = this.uuid + name;
+  if (uuid === false) {
+    this.unset(key);
+  } else if (uuid != null) {
+    this.set(key, uuid);
+  } else {
+    uuid = this.get(key);
+  }
+  return uuid;
+});
+
 Info.method('destroy', function(next) {
   this.destroyInfo(next);
 });

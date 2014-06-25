@@ -32,11 +32,13 @@ var restify = require('restify')
     , createBucket: ['POST', '/bucket/:bucketName', BASIC_AUTH]
     , getBuckets: ['GET', '/buckets', BASIC_AUTH, 'buckets']
     , getBucket: ['GET', '/bucket/:bucketName', BASIC_AUTH]
+    , renameBucket: ['POST', '/bucket/:bucketName/rename/:newBucketName', BASIC_AUTH]
     , deleteBucket: ['POST', '/bucket/:bucketName/delete', BASIC_AUTH]
     , getBucketFile: ['GET', '/bucket/:bucketName/file/:filename', BASIC_AUTH]
     , getBucketFileKey: ['GET', '/bucket/:bucketName/file/:filename/:key', BASIC_AUTH]
     , setBucketFileData: ['POST', '/bucket/:bucketName/file/:filename/data', BASIC_AUTH]
     , uploadBucketFile: ['POST', '/bucket/:bucketName/file/:filename', BASIC_AUTH]
+    , renameBucketFile: ['POST', '/bucket/:bucketName/file/:filename/rename/:newFilename', BASIC_AUTH]
     , deleteBucketFile: ['POST', '/bucket/:bucketName/file/:filename/delete', BASIC_AUTH]
     , shareBucket: ['POST', '/bucket/:bucketName/share', BASIC_AUTH]
     , shareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/share', BASIC_AUTH]
@@ -235,6 +237,13 @@ API.method('getBucket', function(params, next) {
   });
 });
 
+API.method('renameBucket', function(params, next) {
+  accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
+    if (err) return next(err);
+    account.renameBucket(params.bucketName, params.newBucketName, fnReturnDetails(next, {bucket: params.newBucketName}));
+  });
+});
+
 API.method('deleteBucket', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
@@ -300,6 +309,16 @@ API.method('setBucketFileData', function(params, next) {
 API.method('uploadBucketFile', function(params, next) {
   next(null, function(req, res, next2) {
     content.upload(req, res, next2);
+  });
+});
+
+API.method('renameBucketFile', function(params, next) {
+  accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
+    if (err) return next(err);
+    account.getBucket(params.bucketName, function(err, bucket) {
+      if (err) return next(err);
+      bucket.renameFile(params.filename, params.newFilename, fnReturnDetails(next, {file: params.newFilename}));
+    });
   });
 });
 

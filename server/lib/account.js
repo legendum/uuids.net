@@ -35,18 +35,9 @@ Account.DEFAULT_QUOTA = DEFAULT_QUOTA;
 Info.properties(Account, PROPERTIES);
 module.exports = Account;
 
-Account.method('bucketUuid', function(bucketName, uuid) {
-  if (uuid || uuid === false) {
-    this.set(this.uuid + bucketName, uuid);
-  } else {
-    uuid = this.get(this.uuid + bucketName);
-  }
-  return uuid;
-})
-
 Account.method('createBucket', function(bucketName, next) {
   var my = this;
-  if (this.bucketUuid(bucketName)) return next(errors.BUCKET_EXISTS);
+  if (this.objectUuid(bucketName)) return next(errors.BUCKET_EXISTS);
   new Bucket(utils.uuid(), function(err, bucket) {
     var buckets
       , now = utils.time();
@@ -54,7 +45,7 @@ Account.method('createBucket', function(bucketName, next) {
     bucket.created(now);
     bucket.name(bucketName);
     bucket.usage(my.usage());
-    my.bucketUuid(bucketName, bucket.uuid);
+    my.objectUuid(bucketName, bucket.uuid);
     buckets = my.buckets() || {};
     buckets[bucketName] = {created: now};
     my.buckets(buckets);
@@ -68,14 +59,32 @@ Account.method('getBuckets', function(next) {
 });
 
 Account.method('getBucket', function(bucketName, next) {
-  var bucketUuid = this.bucketUuid(bucketName);
+  var bucketUuid = this.objectUuid(bucketName);
   if (!bucketUuid) return next(errors.BUCKET_MISSING);
   new Bucket(bucketUuid, next);
 });
 
+Account.method('renameBucket', function(bucketName, newBucketName, next) {
+  var my = this
+    , uuid = this.objectUuid(bucketName);
+  if (!uuid) return next(errors.BUCKET_MISSING);
+  new Bucket(uuid, function(err, bucket) {
+    var buckets;
+    if (err) return next(err);
+    bucket.name(newBucketName);
+    my.objectUuid(bucketName, false);
+    my.objectUuid(newBucketName, bucket.uuid);
+    buckets = my.buckets();
+    buckets[newBucketName] = buckets[bucketName];
+    delete(buckets[bucketName]);
+    my.buckets(buckets);
+    next(null, bucket);
+  });
+});
+
 Account.method('deleteBucket', function(bucketName, next) {
   var my = this
-    , bucketUuid = this.bucketUuid(bucketName)
+    , bucketUuid = this.objectUuid(bucketName)
   if (!bucketUuid) return next(errors.BUCKET_MISSING);
   new Bucket(bucketUuid, function(err, bucket) {
     var buckets;
@@ -85,7 +94,7 @@ Account.method('deleteBucket', function(bucketName, next) {
       buckets = my.buckets();
       delete buckets[bucketName];
       my.buckets(buckets);
-      my.bucketUuid(bucketName, false);
+      my.objectUuid(bucketName, false);
       next(null, bucket);
     });
   });
@@ -109,7 +118,7 @@ Account.method('destroy', function(next) {
 
   this.getBuckets(function(err, buckets) {
     for(bucketName in buckets) {
-      var bucketUuid = my.bucketUuid(bucketName);
+      var bucketUuid = my.objectUuid(bucketName);
       if (!bucketUuid) return next(errors.BUCKET_MISSING);
       deferreds.push(destroyBucket(bucketUuid));
     }

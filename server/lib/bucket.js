@@ -30,18 +30,9 @@ Bucket.method('details', function(next) {
   next(null, {files: files, shares: shared, created: created});
 });
 
-Bucket.method('fileUuid', function(filename, uuid) {
-  if (uuid || uuid === false) {
-    this.set(this.uuid + filename, uuid);
-  } else {
-    uuid = this.get(this.uuid + filename);
-  }
-  return uuid;
-})
-
 Bucket.method('createFile', function(filename, next) {
   var my = this
-    , uuid = this.fileUuid(filename)
+    , uuid = this.objectUuid(filename)
   if (uuid) return next(errors.FILE_EXISTS);
   new File(null, function(err, file) {
     var files
@@ -57,7 +48,7 @@ Bucket.method('createFile', function(filename, next) {
     , updated: now
     };
     my.files(files);
-    my.fileUuid(filename, file.uuid);
+    my.objectUuid(filename, file.uuid);
     file.meta({
       name: filename
     , size: 0
@@ -74,7 +65,7 @@ Bucket.method('createFile', function(filename, next) {
 
 Bucket.method('getFile', function(filename, next) {
   var my = this
-    , uuid = this.fileUuid(filename);
+    , uuid = this.objectUuid(filename);
   if (!uuid) return next(errors.FILE_MISSING);
   new File(uuid, function(err, file) {
     if (err) return next(err);
@@ -111,9 +102,27 @@ Bucket.method('measureFileAction', function(file, filename, action, next) {
   next(null, file);
 });
 
+Bucket.method('renameFile', function(filename, newFilename, next) {
+  var my = this
+    , uuid = this.objectUuid(filename);
+  if (!uuid) return next(errors.FILE_MISSING);
+  new File(uuid, function(err, file) {
+    var files;
+    if (err) return next(err);
+    file.name(newFilename);
+    my.objectUuid(filename, false);
+    my.objectUuid(newFilename, file.uuid);
+    files = my.files();
+    files[newFilename] = files[filename];
+    delete(files[filename]);
+    my.files(files);
+    next(null, file);
+  });
+});
+
 Bucket.method('deleteFile', function(filename, next) {
   var my = this
-    , uuid = this.fileUuid(filename);
+    , uuid = this.objectUuid(filename);
   if (!uuid) return next(errors.FILE_MISSING);
   new File(uuid, function(err, file) {
     if (err) return next(err);
@@ -122,7 +131,7 @@ Bucket.method('deleteFile', function(filename, next) {
       var files = my.files() || {};
       delete files[filename];
       my.files(files);
-      my.fileUuid(filename, false);
+      my.objectUuid(filename, false);
       my.deleteShares(filename);
       next(null, file);
     });
@@ -195,7 +204,7 @@ Bucket.method('destroy', function(next) {
   }
 
   for (var filename in files) {
-    var uuid = this.fileUuid(filename)
+    var uuid = this.objectUuid(filename)
     if (!uuid) return next(errors.FILE_MISSING);
     this.deleteShares(filename);
     deferreds.push(destroyFile(uuid));

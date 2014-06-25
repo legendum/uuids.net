@@ -116,6 +116,21 @@ describe('server', function() {
       });
     });
 
+    it('should rename a bucket to a weirder name', function(done) {
+      var newUrlencoded;
+      weirdName += " even weirder!?";
+      newUrlencoded = encodeURIComponent(weirdName);
+      unirest.post(URL + 'bucket/' + urlencoded + '/rename/' + newUrlencoded)
+        .auth($nameDigest, $session)
+        .end(function(response) {
+          var result = response.body;
+          assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+          assert.equal(result.bucket.name, weirdName);
+          urlencoded = newUrlencoded;
+          done();
+        });
+    });
+
     it('should get a bucket with a weird name', function(done) {
       unirest.get(URL + 'bucket/' + urlencoded)
         .auth($nameDigest, $session)
@@ -222,6 +237,20 @@ describe('server', function() {
     });
   });
 
+  describe('POST /bucket/bucket2/file/file3/rename/file4', function() {
+    it('should rename new file', function(done) {
+      unirest.post(URL + 'bucket/bucket2/file/file3/rename/file4')
+        .auth($nameDigest, $session)
+        .attach('file', $pdfPath)
+        .end(function(response) {
+          var result = response.body;
+          assert.isTrue(utils.isDigest(result.file.uuidDigest));
+          assert.equal(result.file.name, 'file4');
+          done();
+        });
+    });
+  });
+
   describe('GET /bucket/bucket2', function() {
     it('should get a bucket', function(done) {
       unirest.get(URL + 'bucket/bucket2')
@@ -231,15 +260,16 @@ describe('server', function() {
           assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
           assert.equal(result.bucket.name, 'bucket2');
           assert.ok(result.bucket.files.file2.created);
-          assert.ok(result.bucket.files.file3.created);
+          assert.notOk(result.bucket.files.file3); // we renamed it earlier
+          assert.ok(result.bucket.files.file4.created);
           done();
         });
     });
   });
 
-  describe('GET /bucket/bucket2/file/file3', function() {
+  describe('GET /bucket/bucket2/file/file4', function() {
     it('should download a new file', function(done) {
-      unirest.get(URL + 'bucket/bucket2/file/file3')
+      unirest.get(URL + 'bucket/bucket2/file/file4')
         .auth($nameDigest, $session)
         .end(function(response) {
           var result = response.body;
@@ -252,9 +282,9 @@ describe('server', function() {
     });
   });
 
-  describe('GET /bucket/bucket2/file/file4', function() {
+  describe('GET /bucket/bucket2/file/file9', function() {
     it('should not download a missing file', function(done) {
-      unirest.get(URL + 'bucket/bucket2/file/file4')
+      unirest.get(URL + 'bucket/bucket2/file/file9')
         .auth($nameDigest, $session)
         .end(function(response) {
           var result = response.body;

@@ -11,7 +11,7 @@ var assert = require('chai').assert
   , Usage = require('../../server/lib/usage')
   , TINY_STORAGE_CHARGE = 100; // bytes
 
-var $bucketName, $filename, $partKey, $share
+var $bucketName, $filename, $newBucketName, $newFilename, $partKey, $share
   , $nameDigest = utils.digest('kevin')
   , $passwordDigest = utils.digest('mysecret')
   , $invitation = invites.create(utils.uuid())
@@ -95,9 +95,21 @@ describe('api', function() {
     });
   });
 
+  describe('renameBucket', function() {
+    it('should rename a bucket', function(done) {
+      $newBucketName = 'bucket2';
+      api.renameBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, newBucketName: $newBucketName}, function(err, result) {
+        assert.isNull(err);
+        assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+        assert.equal(result.bucket.name, $newBucketName);
+        done();
+      });
+    });
+  });
+
   describe('getBucketFileKey', function() {
     it('should get a bucket file key', function(done) {
-      api.getBucketFileKey({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename, key: 'a'}, function(err, result) {
+      api.getBucketFileKey({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $filename, key: 'a'}, function(err, result) {
         assert.isNull(err);
         assert.isTrue(utils.isDigest(result.file.uuidDigest));
         assert.equal(1, result.file.data.a);
@@ -109,12 +121,12 @@ describe('api', function() {
 
   describe('shareBucket', function() {
     it('should share a bucket', function(done) {
-      api.shareBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName}, function(err, result) {
+      api.shareBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName}, function(err, result) {
         $uuidSharedPart = result.bucket.share.uuid;
         assert.isTrue(utils.isUuid($uuidSharedPart));
         assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
-        assert.equal(result.bucket.name, $bucketName);
-        assert.equal(result.bucket.share.name, $bucketName);
+        assert.equal(result.bucket.name, $newBucketName);
+        assert.equal(result.bucket.share.name, $newBucketName);
         assert.equal(result.bucket.share.type, 'bucket');
         done();
       });
@@ -125,7 +137,7 @@ describe('api', function() {
     it('should get a shared bucket', function(done) {
       api.getSharedBucket({uuidSharedPart: $uuidSharedPart}, function(err, result) {
         assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
-        assert.equal(result.bucket.name, $bucketName);
+        assert.equal(result.bucket.name, $newBucketName);
         done();
       });
     });
@@ -133,11 +145,11 @@ describe('api', function() {
 
   describe('shareBucketFile', function() {
     it('should share a bucket file', function(done) {
-      api.shareBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename}, function(err, result) {
+      api.shareBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $filename}, function(err, result) {
         $uuidSharedPart = result.bucket.share.uuid;
         assert.isTrue(utils.isUuid($uuidSharedPart));
         assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
-        assert.equal(result.bucket.name, $bucketName);
+        assert.equal(result.bucket.name, $newBucketName);
         assert.equal(result.bucket.share.name, $filename);
         assert.equal(result.bucket.share.type, 'file');
         done();
@@ -157,9 +169,21 @@ describe('api', function() {
     });
   });
 
+  describe('renameBucketFile', function() {
+    it('should rename a bucket file', function(done) {
+      $newFilename = 'file2';
+      api.renameBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $filename, newFilename: $newFilename}, function(err, result) {
+        assert.isNull(err);
+        assert.isTrue(utils.isDigest(result.file.uuidDigest));
+        assert.equal(result.file.name, $newFilename);
+        done();
+      });
+    });
+  });
+
   describe('deleteBucketFile', function() {
     it('should delete a bucket file', function(done) {
-      api.deleteBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename}, function(err, result) {
+      api.deleteBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $newFilename}, function(err, result) {
         assert.isNull(err);
         assert.isTrue(utils.isDigest(result.file.uuidDigest));
         done();
