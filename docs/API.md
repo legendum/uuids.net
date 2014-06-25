@@ -161,6 +161,25 @@ https://uuids.net/bucket/MyNewBucket
      created: 1402629846179 } }
 ```
 
+### POST /bucket/{bucketName}/rename/{newBucketName}
+
+Rename a bucket.
+
+Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
+
+#### Example request
+```
+curl --user $nameDigest:$session -X POST \
+https://uuids.net/bucket/MyNewBucket/rename/MyBestBucket
+```
+
+#### Example response
+```
+{ bucket: 
+   { name: 'MyBestBucket',
+     uuidDigest: '20f885cb01695c7bc16fd6d90f6e79b55f628bf4' } }
+```
+
 ### POST /bucket/{bucketName}/delete
 
 Delete a bucket. (We use "POST" instead of "DELETE" to be compatible with web browsers).
@@ -170,13 +189,13 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session -X POST \
-https://uuids.net/bucket/MyNewBucket/delete
+https://uuids.net/bucket/MyBestBucket/delete
 ```
 
 #### Example response
 ```
 { bucket: 
-   { name: 'MyNewBucket',
+   { name: 'MyBestBucket',
      uuidDigest: '20f885cb01695c7bc16fd6d90f6e79b55f628bf4' } }
 ```
 
@@ -189,7 +208,7 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session --form file=@myfile.txt \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile
 
 ```
 
@@ -212,7 +231,7 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile
 ```
 
 #### Example response
@@ -231,7 +250,7 @@ POST a single parameter ```data``` whose value is JSON tag/value pairs like ```{
 #### Example request
 ```
 curl --user $nameDigest:$session --data 'data={"a":1,"b":2}' \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile/data
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile/data
 ```
 
 #### Example response
@@ -250,7 +269,7 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile/a
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile/a
 ```
 
 #### Example response
@@ -259,6 +278,25 @@ https://uuids.net/bucket/MyNewBucket/file/MyNewFile/a
    { name: 'MyNewFile',
      uuidDigest: 'a690e7d00bb376e35740bb05beb392ebf2c359a8',
      data: { a: 1 } } }
+```
+
+### POST /bucket/{bucketName}/file/{filename}/rename/{newFilename}
+
+Rename a file.
+
+Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
+
+#### Example request
+```
+curl --user $nameDigest:$session -X POST \
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile/rename/MyBestFile
+```
+
+#### Example response
+```
+{ file: 
+   { name: 'MyBestFile',
+     uuidDigest: 'b00540a8d19af6b77c51cfafd3c1460b165c0578' } 
 ```
 
 ### POST /bucket/{bucketName}/file/{filename}/delete
@@ -270,13 +308,13 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session -X POST \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile/delete
+https://uuids.net/bucket/MyBestBucket/file/MyBestFile/delete
 ```
 
 #### Example response
 ```
 { file: 
-   { name: 'MyNewFile',
+   { name: 'MyBestFile',
      uuidDigest: 'b00540a8d19af6b77c51cfafd3c1460b165c0578' } 
 ```
 
@@ -289,17 +327,17 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session -X POST \
-https://uuids.net/bucket/MyNewBucket/share
+https://uuids.net/bucket/MyBestBucket/share
 ```
 
 #### Example response
 ```
 { bucket: 
-   { name: 'MyNewBucket',
+   { name: 'MyBestBucket',
      uuidDigest: 'b76ed9b792b445d1a17e532df3736c5bd1785872',
      share: 
       { type: 'bucket',
-        name: 'MyNewBucket',
+        name: 'MyBestBucket',
         uuid: '30ed38a1-94b1-4030-b2d5-0e418ab9816b' } } }
 ```
 Here, the bucket share UUID is ```30ed38a1-94b1-4030-b2d5-0e418ab9816b```.
@@ -313,13 +351,13 @@ Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
 #### Example request
 ```
 curl --user $nameDigest:$session -X POST \
-https://uuids.net/bucket/MyNewBucket/file/MyNewFile/share
+https://uuids.net/bucket/MyBestBucket/file/MyNewFile/share
 ```
 
 #### Example response
 ```
 { bucket: 
-   { name: 'MyNewBucket',
+   { name: 'MyBestBucket',
      uuidDigest: 'b76ed9b792b445d1a17e532df3736c5bd1785872',
      share: 
       { type: 'file',
@@ -341,7 +379,7 @@ https://uuids.net/shared/bucket/30ed38a1-94b1-4030-b2d5-0e418ab9816b
 #### Example response
 ```
 { bucket: 
-   { name: 'MyNewBucket',
+   { name: 'MyBestBucket',
      uuidDigest: '5c39500c183bbc6cf75c6a83b24e22d58ad400ec',
      files: {
         MyNewFile: {size: 0, reads: 0, writes: 0, created: 1402630192022, updated: 1402630192022},
