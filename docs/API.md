@@ -220,7 +220,7 @@ https://uuids.net/bucket/MyBestBucket/file/MyNewFile
      type: 'text/plain',
      uuidDigest: 'e86d696b737e3b79f27c2abb7410d5dc640d2b0e' } }
 ```
-Note that the name of the file is not recorded; only its contents are stored.
+Note that the name of the uploaded file (e.g. "myfile.txt") is not recorded; only its contents are stored.
 
 ### GET /bucket/{bucketName}/file/{filename}
 
