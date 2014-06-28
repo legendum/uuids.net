@@ -203,6 +203,8 @@ function renameBucket() {
   if (name === null) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/rename/' + encodeURIComponent(name))
   .done(function(response) {
+    _selected.bucket = name;
+    showActions();
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
@@ -227,6 +229,8 @@ function renameBucketFile() {
   if (name === null) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/rename/' + encodeURIComponent(name))
   .done(function(response) {
+    _selected.file = name;
+    showActions();
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
