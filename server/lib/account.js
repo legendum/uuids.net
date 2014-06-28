@@ -10,7 +10,7 @@ var when = require('when')
   , Bucket = require('./bucket')
   , errors = require('./errors')
   , utils = require('./utils')
-  , DEFAULT_QUOTA = 20971520 // 20 MiB
+  , DEFAULT_QUOTA = 21474836480 // 20 GiB
   , PROPERTIES = ['buckets', 'usage'];
 
 function Account(uuid, next) {
