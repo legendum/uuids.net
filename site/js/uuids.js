@@ -221,7 +221,7 @@ function deleteBucket() {
 }
 
 function renameBucketFile() {
-  var name = prompt("New name", _selected.bucket);
+  var name = prompt("New name", _selected.file);
   if (name === null) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/rename/' + encodeURIComponent(name))
   .done(function(response) {
