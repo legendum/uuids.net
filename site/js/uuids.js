@@ -214,6 +214,8 @@ function deleteBucket() {
   if (ok === false) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/delete')
   .done(function(response) {
+    _selected.bucket = null;
+    showActions();
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
@@ -236,6 +238,8 @@ function deleteBucketFile() {
   if (ok === false) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/delete')
   .done(function(response) {
+    _selected.file = null;
+    showActions();
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
