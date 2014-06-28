@@ -119,12 +119,12 @@ function setupUploader() {
   , done: function (e, response) {
       $.each(response.files, function(index, file) {
         $('<li/>').text(file.name).appendTo($('#uploaded'));
+        getBucketFiles();
       });
     },
     progressall: function(e, response) {
       var progress = parseInt(response.loaded / response.total * 100, 10);
       $('#progress .meter').css('width', progress + '%');
-      if (progress == 100) getBucketFiles();
     }
   });
 }
