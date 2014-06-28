@@ -106,7 +106,7 @@ API.method('createResponse', function(action, auth, jsonRoot) {
   }
 
   return function(req, res, next) {
-    var cookies = cookie.parse(req.headers.cookie);
+    var cookies = req.headers.cookie ? cookie.parse(req.headers.cookie) : {};
     if (typeof auth === 'object') { // alternative use as a params list
       if (err = my.paramMissing(req.params, auth)) {
         return sendError(res, err, next);
