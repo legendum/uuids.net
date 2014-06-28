@@ -19,6 +19,7 @@ function alertMessage($el, clss, message) {
 
 function getBuckets(next) {
   var $ul = $('#bucket-list');
+  if ($ul.length == 0) return;
   $.get('/buckets')
   .done(function(response) {
     var buckets = [], bucket, $li, i;
