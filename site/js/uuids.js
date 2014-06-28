@@ -314,8 +314,8 @@ exports.setup = function() {
     $.cookie('session', _session.session, options);
     window.open('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file))
     setTimeout(function() {
-      $.removeCookie('nameDigest');
-      $.removeCookie('session');
+      $.removeCookie('nameDigest', options);
+      $.removeCookie('session', options);
     }, 1000);
   });
 
