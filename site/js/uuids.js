@@ -124,6 +124,7 @@ function setupUploader() {
     progressall: function(e, response) {
       var progress = parseInt(response.loaded / response.total * 100, 10);
       $('#progress .meter').css('width', progress + '%');
+      if (progress == 100) getBucketFiles();
     }
   });
 }
