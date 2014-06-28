@@ -17,7 +17,7 @@ function alertMessage($el, clss, message) {
   });
 }
 
-function getBuckets(next) {
+function getBuckets() {
   var $ul = $('#bucket-list');
   if ($ul.length == 0) return;
   $.get('/buckets')
@@ -43,14 +43,13 @@ function getBuckets(next) {
       showActions();
       getBucketFiles();
     });
-    if (next) next(response);
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
     alertMessage($('#buckets'), 'alert', response.error);
   });
 }
 
-function getBucketFiles(next) {
+function getBucketFiles() {
   var $ul = $('#file-list');
   $.get('/bucket/' + encodeURIComponent(_selected.bucket))
   .done(function(response) {
@@ -71,7 +70,6 @@ function getBucketFiles(next) {
       $(e.target).addClass('selected');
       showActions();
     });
-    if (next) next(response);
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
     alertMessage($('#files'), 'alert', response.error);
@@ -90,7 +88,7 @@ function showActions() {
   getUsage();
 }
 
-function getUsage(next) {
+function getUsage() {
   $.get('/usage')
   .done(function(response) {
     var usage = response.usage
@@ -98,7 +96,6 @@ function getUsage(next) {
       , pct = parseInt(total / usage.quota);
 console.log(usage);
     $('.usage').text('' + pct + '% of quota used');
-    if (next) next(response.usage);
   });
 }
 
@@ -190,6 +187,7 @@ function createBucket($form) {
   var bucket = $('input[name="name"]', $form).val();
   $.post('/bucket/' + encodeURIComponent(bucket))
   .done(function(response) {
+    getBuckets();
     alertMessage($form, 'success', 'Bucket created');
     $('a.close-reveal-modal', $form.parent()).trigger('click');
   }).fail(function(jqXHR) {
