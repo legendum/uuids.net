@@ -13,12 +13,14 @@ var restify = require('restify')
   , invites = require('./invites')
   , quotas = require('./quotas')
   , content = require('./content')
+  , cookie = require('./cookie')
   , errors = require('./errors')
   , shares = require('./shares')
   , utils = require('./utils')
 
   , VERSION = '1.0.0'
-  , BASIC_AUTH = true // to require the nameDigest and session over Basic Auth
+  , BASIC_AUTH = 1 // to require the nameDigest and session over Basic Auth
+  , NO_AUTH = 0
 
   , ROUTES = {
       // HTTP method, the path, the parameter list when using POST and JSON root
@@ -94,7 +96,7 @@ API.method('paramMissing', function(params, paramsNeeded) {
   }
 });
 
-API.method('createResponse', function(action, useBasicAuth, jsonRoot) {
+API.method('createResponse', function(action, auth, jsonRoot) {
   var err, my = this;
 
   function sendError(res, err, next) {
@@ -104,16 +106,19 @@ API.method('createResponse', function(action, useBasicAuth, jsonRoot) {
   }
 
   return function(req, res, next) {
-    if (typeof useBasicAuth === 'object') { // alternative use as a params list
-      if (err = my.paramMissing(req.params, useBasicAuth)) {
+    var cookies = cookie.parse(req.headers.cookie);
+    if (typeof auth === 'object') { // alternative use as a params list
+      if (err = my.paramMissing(req.params, auth)) {
         return sendError(res, err, next);
       }
-      useBasicAuth = false;
-    }
-    if (useBasicAuth) {
+      auth = NO_AUTH;
+    } else if (auth === BASIC_AUTH) {
       if (req.username && req.username != 'anonymous') {
         req.params.nameDigest = req.username;
         req.params.sessionPartKey = req.authorization.basic.password;
+      } else if (cookies.nameDigest && cookies.session) { // hack for downloads!
+        req.params.nameDigest = cookies.nameDigest;
+        req.params.sessionPartKey = cookies.session;
       } else {
         res.setHeader('WWW-Authenticate', 'Basic realm="UUIDs"');
         return next(new restify.UnauthorizedError());
@@ -156,9 +161,9 @@ API.method('setupRoutes', function(server, next) {
     var spec = ROUTES[action]
       , method = spec[0].toLowerCase()
       , path = spec[1]
-      , useBasicAuth = spec[2]
+      , auth = spec[2]
       , jsonRoot = spec[3];
-    server[method](path, this.createResponse(action, useBasicAuth, jsonRoot));
+    server[method](path, this.createResponse(action, auth, jsonRoot));
   }
   if (next) next();
 });
@@ -312,7 +317,7 @@ API.method('setBucketFileData', function(params, next) {
 // Note the file are created if they don't exist in the bucket.
 API.method('uploadBucketFiles', function(params, next) {
   next(null, function(req, res, next2) {
-    content.uploadMultiple(req, res, next2);
+    content.upload(req, res, next2);
   });
 });
 

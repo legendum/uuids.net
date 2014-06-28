@@ -62,35 +62,25 @@ Content.method('downloadFile', function(file, res, next) {
     });
 });
 
-Content.method('uploadMultiple', function(req, res, next) {
-  var my = this, reqFiles = req.files['files[]'];
-  if (!reqFiles) return next(errors.FILE_MISSING);
-  asyncblock(function(flow) {
-    var reqSingle;
-    for (var file in reqFiles) {
-      reqSingle = {
-        params: {filename: file.name}
-      , files:  {file: reqFiles[file]}
-      };
-      my.upload(reqSingle, res, flow.add());
-      flow.wait();
-    }
-  });
-  next(null, {ok: true});
-});
-
 Content.method('upload', function(req, res, next) {
-  var my = this, params = req.params;
+  var my = this
+    , params = req.params
+    , uploaded;
+  if (req.files) {
+    if (req.files['files[]']) req.files.file = req.files['files[]'];
+    if (req.files.file) uploaded = req.files.file;
+    params.filename = params.filename || req.files.file.name;
+  } else {
+    return next(errors.FILE_MISSING);
+  }
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
     account.getBucket(params.bucketName, function(err, bucket) {
-      var files = bucket.files() || {}
+      var files = bucket ? (bucket.files() || {}) : {}
         , method = files[params.filename] ? 'getFile' : 'createFile';
       if (err) return next(err);
       bucket[method](params.filename, function(err, file) {
-        var uploaded;
         if (err) return next(err);
-        if (req.files && req.files.file) uploaded = req.files.file;
         my.processFile(file, uploaded, function(err, fileData, sizeDiff) {
           if (err) return next(err);
           res.send(HttpStatus.OK, {

@@ -213,6 +213,7 @@ describe('server', function() {
     it('should create a file', function(done) {
       unirest.post(URL + 'bucket/bucket2/file/file2')
         .auth($nameDigest, $session)
+        .attach('file', $pdfPath)
         .end(function(response) {
           var result = response.body;
           assert.isTrue(utils.isDigest(result.file.uuidDigest));

@@ -11,6 +11,7 @@
   <link rel="icon" type="image/png" href="../img/uuids-logo.png">
   <link type="text/css" rel="stylesheet" href="../css/normalize.css">
   <link type="text/css" rel="stylesheet" href="../css/foundation.min.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation-icons.css">
   <link type="text/css" rel="stylesheet" href="../css/uuids.css">
 
   <script type="text/javascript" src="../js/vendor/modernizr.js"></script>
@@ -20,17 +21,18 @@
   <script type="text/javascript" src="../js/vendor/sha256.js"></script>
   <script type="text/javascript" src="../js/uuids.js"></script>
   <script type="text/javascript">
-  $(function() {
-    uuids.init();
-  });
+  $(function() { uuids.setup() });
   </script>
 </head>
 <body>
   <div id="surround">
     <a href="/"><img id="logo" src="/img/uuids-logo.png" alt="UUIDs"></a>
     <div id="header" class="row">
-      <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
-      <a href="#" id="logout-button" class="button hidden">Log out</a>
+      <div id="buttons">
+        <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
+        <a href="/app/files.html" id="files-button" class="button hidden"><i class="fi-page-multiple"></i> My files</a>
+        <a href="#" id="logout-button" class="button hidden">Log out</a>
+      </div>
       <div id="title">UUIDs.net</div>
     </div>
     <div id="page" class="row">
@@ -58,7 +60,7 @@
         <div class="content">
           <h3>Got an invitation?</h3>
           <form id="create-account-form" method="post"><fieldset>
-            <div class="row hidden alerter">
+            <div class="row alerter hidden">
               <div class="small-12 columns">
                 <div data-alert class="alert-box"></div>
               </div>
@@ -118,7 +120,7 @@
     <h3>Login</h3>
     <a class="close-reveal-modal">&#215;</a>
     <form id="login-form" method="post"><fieldset>
-      <div class="row hidden alerter">
+      <div class="row alerter hidden">
         <div class="small-12 columns">
           <div data-alert class="alert-box"></div>
         </div>
@@ -143,7 +145,7 @@
         </div>
       </div>
     </fieldset></form>
-    <p class="small-print centered">
+    <p class="small-print text-center">
       Sorry, we cannot send password reset links or reminders.
     </p>
   </div>

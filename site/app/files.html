@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+<head>
+  <title>UUIDs.net</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" type="image/png" href="../img/uuids-logo.png">
+  <link type="text/css" rel="stylesheet" href="../css/normalize.css">
+  <link type="text/css" rel="stylesheet" href="../css/jquery.fileupload.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation.min.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation-icons.css">
+  <link type="text/css" rel="stylesheet" href="../css/uuids.css">
+
+  <script type="text/javascript" src="../js/vendor/modernizr.js"></script>
+  <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../js/vendor/jquery.ui.widget.js"></script>
+  <script type="text/javascript" src="../js/vendor/jquery.iframe-transport.js"></script>
+  <script type="text/javascript" src="../js/vendor/jquery.fileupload.js"></script>
+  <script type="text/javascript" src="../js/vendor/jquery.cookie.js"></script>
+  <script type="text/javascript" src="../js/foundation.min.js"></script>
+  <script type="text/javascript" src="../js/foundation/foundation.reveal.js"></script>
+  <script type="text/javascript" src="../js/vendor/sha256.js"></script>
+  <script type="text/javascript" src="../js/uuids.js"></script>
+  <script type="text/javascript">
+  $(function() { uuids.setup() });
+  </script>
+</head>
+<body>
+  <div id="surround">
+    <a href="/"><img id="logo" src="/img/uuids-logo.png" alt="UUIDs"></a>
+    <div id="header" class="row">
+      <div id="buttons">
+        <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
+        <a href="#" id="logout-button" class="button hidden">Log out</a>
+      </div>
+      <div id="title">UUIDs.net</div>
+    </div>
+    <div id="page" class="row">
+      <div id="buckets" class="medium-4 columns">
+        <div class="row alerter hidden">
+          <div class="small-12 columns">
+            <div data-alert class="alert-box"></div>
+          </div>
+        </div>
+        <div class="content">
+          <a href="#" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-folder-add"></i> New bucket</a>
+          <div class="contained">
+            <ul id="bucket-list" class="side-nav"></ul>
+          </div>
+        </div>
+      </div>
+      <div id="files" class="medium-4 columns">
+        <div class="content">
+          <a href="#" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
+          <div class="contained">
+            <ul id="file-list" class="side-nav"></ul>
+          </div>
+        </div>
+      </div>
+      <div id="actions" class="medium-4 columns">
+        <div class="content">
+          <div id="bucket-actions" class="actions panel callout radius hidden">
+            <span id="bucket-name" class="label secondary round"></span>
+            <ul class="no-bullet">
+              <li><a href="#" id="rename-bucket-button" class="button">Rename bucket</a></li>
+              <li><a href="#" id="delete-bucket-button" class="button">Delete bucket</a></li>
+            </ul>
+            <div class="usage"></div>
+          </div>
+          <div id="file-actions" class="actions panel callout radius hidden">
+            <span id="file-name" class="label secondary round"></span>
+            <ul class="no-bullet">
+              <li><a href="#" id="download-file-button" class="button"><i class="fi-arrow-down"></i> Download file</a></li>
+              <li><a href="#" id="rename-file-button" class="button">Rename file</a></li>
+              <li><a href="#" id="delete-file-button" class="button">Delete file</a></li>
+            </ul>
+            <span class="usage"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="footer" class="row">
+      <div class="medium-12 columns">
+        <div class="content">
+          Copyright &copy; 2014 Kevin Hutchinson. Licensed under the <a target="agpl" href="http://www.gnu.org/licenses/agpl-3.0.html">AGPL V3 License</a>.
+          By using <a href="https://uuids.net/">UUIDs.net</a> you accept our <a href="legal.html">terms &amp; conditions</a>.
+          Contact <a target="tweet" href="https://twitter.com/uuids">@UUIDs</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal" class="reveal-modal small" data-reveal>
+    <h3>Login</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <form id="login-form" method="post"><fieldset>
+      <div class="row alerter hidden">
+        <div class="small-12 columns">
+          <div data-alert class="alert-box"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Account name
+            <input name="name" type="text">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-12 columns">
+          <label>Password
+            <input name="password" type="password">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-10 columns">
+          <button id="login-button" class="button">Login</button>
+        </div>
+      </div>
+    </fieldset></form>
+    <p class="small-print text-center">
+      Sorry, we cannot send password reset links or reminders.
+    </p>
+  </div>
+
+  <div id="create-bucket-modal" class="reveal-modal small" data-reveal>
+    <h3>Create a new bucket</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <form id="create-bucket-form" method="post"><fieldset>
+      <div class="row alerter hidden">
+        <div class="small-12 columns">
+          <div data-alert class="alert-box"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Bucket name
+            <input name="name" type="text">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-10 columns">
+          <button id="create-bucket-button" class="button">Create bucket</button>
+        </div>
+      </div>
+    </fieldset></form>
+  </div>
+
+  <div id="upload-files-modal" class="reveal-modal small" data-reveal>
+    <h3>Upload files</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <div class="button fileinput-button">
+      <i class="fi-plus"></i>
+      <span>Select files...</span>
+      <input id="fileupload" type="file" name="files[]" multiple>
+    </div>
+    <!-- The upload progress bar -->
+    <div id="progress" class="progress round success">
+      <span class="meter" style="width:0%"></span>
+    </div>
+    <!-- A list of the uploaded files -->
+    <ul id="uploaded" class="circle"></ul>
+  </div>
+
+  <script type="text/javascript">
+    $(document).foundation();
+  </script>
+</body>
+</html>

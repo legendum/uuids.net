@@ -17,12 +17,32 @@ fieldset {
   padding-bottom: 0px;
 }
 
-.centered {
-  text-align: center;
+.actions ul {
+  margin-bottom: 0;
 }
 
-.hidden {
-  display: none;
+.usage {
+  color: #777;
+}
+
+#actions .content {
+  padding-top: 60px;
+}
+
+.contained {
+  height: 500px;
+  border: 1px solid #998;
+  background-color: #ffe;
+}
+
+.contained ul {
+  height: 498px;
+  overflow: auto;
+}
+
+.selected {
+  font-weight: 900;
+  background-color: #eed;
 }
 
 .button {
@@ -33,6 +53,10 @@ fieldset {
 
 a.button:hover {
   text-decoration: none;
+}
+
+.hidden {
+  display: none;
 }
 
 #surround {
@@ -81,7 +105,7 @@ a.button:hover {
   margin-top: 36px;
 }
 
-#header #login-button, #header #logout-button {
+#header #buttons {
   position: absolute;
   top: 20px;
   right: 30px;
