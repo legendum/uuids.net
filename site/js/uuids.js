@@ -38,7 +38,7 @@ function getUsage() {
       , total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
       , pct = parseInt(100 * total / usage.quota)
       , mb = parseInt(usage.quota / 1048576);
-    $('.usage').text('' + pct + '% of ' + mb + 'GB quota used');
+    $('.usage').text('' + pct + '% of ' + mb + 'MB quota used');
   });
 }
 
