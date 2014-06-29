@@ -138,7 +138,7 @@ function logout() {
 function getBuckets() {
   var $ul = $('#bucket-list');
   if ($ul.length == 0) return; // e.g. when on the index.html page
-  $ul.html('<li>' + _spinner + '</li>');
+  $ul.html('<li>&nbsp;' + _spinner + '</li>');
   $.get('/buckets')
   .done(function(response) {
     var buckets = [], bucket, $li, i;
@@ -170,7 +170,7 @@ function getBuckets() {
 
 function getBucketFiles() {
   var $ul = $('#file-list');
-  $ul.html('<li>' + _spinner + '</li>');
+  $ul.html('<li>&nbsp;' + _spinner + '</li>');
   $.get('/bucket/' + encodeURIComponent(_selected.bucket))
   .done(function(response) {
     var files = [], file, $li, i;
