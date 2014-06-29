@@ -170,7 +170,7 @@ function getBuckets() {
 
 function getBucketFiles() {
   var $ul = $('#file-list');
-  $ul.html('<li>&nbsp;' + _spinner + '</li>');
+  $ul.html('<li>&nbsp;&nbsp;&nbsp;' + _spinner + '</li>');
   $.get('/bucket/' + encodeURIComponent(_selected.bucket))
   .done(function(response) {
     var files = [], file, $li, i;
