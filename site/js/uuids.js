@@ -36,8 +36,9 @@ function getUsage() {
   .done(function(response) {
     var usage = response.usage
       , total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
-      , pct = parseInt(total / usage.quota);
-    $('.usage').text('' + pct + '% of quota used');
+      , pct = parseInt(100 * total / usage.quota)
+      , mb = parseInt(usage.quota / 1048576);
+    $('.usage').text('' + pct + '% of ' + mb + 'GB quota used');
   });
 }
 
