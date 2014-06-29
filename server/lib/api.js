@@ -46,6 +46,7 @@ var restify = require('restify')
     , deleteBucketFile: ['POST', '/bucket/:bucketName/file/:filename/delete', BASIC_AUTH]
     , shareBucket: ['POST', '/bucket/:bucketName/share', BASIC_AUTH]
     , shareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/share', BASIC_AUTH]
+    , unshareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/unshare', BASIC_AUTH]
     , toggleShare: ['POST', '/bucket/:bucketName/share/:uuidSharedPart/toggle', BASIC_AUTH]
     , deleteShare: ['POST', '/bucket/:bucketName/share/:uuidSharedPart/delete', BASIC_AUTH]
     , getSharedBucketFileKey: ['GET', '/shared/bucket/:uuidSharedPart/file/:filename/:key']
@@ -422,6 +423,19 @@ API.method('shareBucketFile', function(params, next) {
         , share: share
         });
         callback(null, bucket);
+      });
+    });
+  });
+});
+
+API.method('unshareBucketFile', function(params, next) {
+  accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
+    if (err) return next(err);
+    account.getBucket(params.bucketName, function(err, bucket) {
+      if (err) return next(err);
+      bucket.deleteShares(params.filename, function(err) {
+        if (err) return next(err);
+        next(null, {ok: true});
       });
     });
   });

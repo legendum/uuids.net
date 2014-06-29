@@ -265,6 +265,18 @@ function shareBucketFile() {
   });
 }
 
+function unshareBucketFile() {
+  var ok = confirm('Are you sure you want to unshare "' + _selected.file + '"?');
+  if (ok === false) return;
+  $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/unshare')
+  .done(function(response) {
+    alertMessage($('#files'), 'File is not shared', 'success');
+  }).fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#files'), response.error);
+  });
+}
+
 function renameBucketFile() {
   var name = prompt("New name", _selected.file);
   if (name === null) return;
@@ -388,6 +400,11 @@ exports.setup = function() {
   $('#share-file-modal .copy-to-clipboard').on('click', function(e) {
     var link = $('#share-file-modal .selected-file-link').text();
     window.prompt("Copy to clipboard: Ctrl+C, Enter", link);
+  });
+
+  // Handle file unsharing
+  $('a#unshare-file-button').on('click', function(e) {
+    unshareBucketFile();
   });
 
   // Handle renamed files

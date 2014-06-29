@@ -194,6 +194,23 @@ describe('api', function() {
     });
   });
 
+  describe('unshareBucketFile', function() {
+    it('should unshare a file', function(done) {
+      api.unshareBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $filename}, function(err, result) {
+        assert.isNull(err);
+        assert.isTrue(result.ok);
+        done();
+      });
+    });
+
+    it('should not get an unshared file key', function(done) {
+      api.getSharedFileKey({uuidSharedPart: $uuidSharedPart, key: 'a'}, function(err, result) {
+        assert.equal(err.message, errors.FILE_MISSING.message);
+        done();
+      });
+    });
+  });
+
   describe('moveBucketFile', function() {
     it('should move a bucket file', function(done) {
       $bucketName = $newBucketName;
