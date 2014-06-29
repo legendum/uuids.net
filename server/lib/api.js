@@ -362,6 +362,7 @@ API.method('moveBucketFile', function(params, next) {
         if (newFiles[filename]) return next(errors.FILE_EXISTS);
         newBucket.objectUuid(filename, uuid);
         bucket.objectUuid(filename, false);
+        bucket.deleteShares(filename);
         newFiles[filename] = files[filename];
         newBucket.files(newFiles);
         delete(files[filename]);
