@@ -165,7 +165,7 @@ function getBuckets() {
     });
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#buckets'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -193,7 +193,7 @@ function getBucketFiles() {
     });
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -220,7 +220,7 @@ function renameBucket() {
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#buckets'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -234,7 +234,7 @@ function deleteBucket() {
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#buckets'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
