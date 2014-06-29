@@ -32,7 +32,7 @@ function getBuckets() {
     for (i in buckets) {
       bucket = buckets[i];
       $li = $('<li/>').appendTo($ul);
-      $('<a href="#">').text(bucket).appendTo($li);
+      $('<a href="JavaScript:void(0)">').text(bucket).appendTo($li);
     }
     $('#bucket-list a').click(function(e) {
       _selected.bucket = $(e.target).text();
@@ -62,7 +62,7 @@ function getBucketFiles() {
     for (i in files) {
       file = files[i];
       $li = $('<li/>').appendTo($ul);
-      $('<a href="#">').text(file).appendTo($li);
+      $('<a href="JavaScript:void(0)">').text(file).appendTo($li);
     }
     $('#file-list a').click(function(e) {
       _selected.file = $(e.target).text();
