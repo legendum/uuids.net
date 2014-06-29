@@ -1,6 +1,7 @@
 (function(exports, global) {
 
-var _session = null
+var _spinner = '<img class="spinner" src="../img/spinner.gif">'
+  , _session = null
   , _selected = {
       bucket: null
     , file: null
@@ -136,7 +137,8 @@ function logout() {
 
 function getBuckets() {
   var $ul = $('#bucket-list');
-  if ($ul.length == 0) return;
+  if ($ul.length == 0) return; // e.g. when on the index.html page
+  $ul.html('<li>' + _spinner + '</li>');
   $.get('/buckets')
   .done(function(response) {
     var buckets = [], bucket, $li, i;
@@ -168,6 +170,7 @@ function getBuckets() {
 
 function getBucketFiles() {
   var $ul = $('#file-list');
+  $ul.html('<li>' + _spinner + '</li>');
   $.get('/bucket/' + encodeURIComponent(_selected.bucket))
   .done(function(response) {
     var files = [], file, $li, i;
@@ -248,7 +251,7 @@ function downloadBucketFile() {
 
 function shareBucketFile() {
   $('#share-file-modal .selected-file-name').text(_selected.file);
-  $('#share-file-modal .selected-file-link').html('<img class="spinner" src="../img/spinner.gif">');
+  $('#share-file-modal .selected-file-link').html(_spinner);
   $('#share-file-modal').foundation('reveal', 'open');
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share')
   .done(function(response) {
