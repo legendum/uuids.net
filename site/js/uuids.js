@@ -384,6 +384,12 @@ exports.setup = function() {
     shareBucketFile();
   });
 
+  // Handle file share link copying
+  $('#share-file-modal .copy-to-clipboard').on('click', function(e) {
+    var link = $('#share-file-modal .selected-file-link').text();
+    window.prompt("Copy to clipboard: Ctrl+C, Enter", link);
+  });
+
   // Handle renamed files
   $('a#rename-file-button').on('click', function(e) {
     renameBucketFile();
