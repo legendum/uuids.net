@@ -46,7 +46,7 @@
             <div data-alert class="alert-box"></div>
           </div>
         </div>
-        <div class="content">
+        <div class="row content">
           <a href="#" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-folder-add"></i> New bucket</a>
           <div class="contained">
             <ul id="bucket-list" class="side-nav"></ul>
@@ -54,7 +54,12 @@
         </div>
       </div>
       <div id="files" class="medium-4 columns">
-        <div class="content">
+        <div class="row alerter hidden">
+          <div class="small-12 columns">
+            <div data-alert class="alert-box"></div>
+          </div>
+        </div>
+        <div class="row content">
           <a href="#" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
           <div class="contained">
             <ul id="file-list" class="side-nav"></ul>
@@ -62,12 +67,17 @@
         </div>
       </div>
       <div id="actions" class="medium-4 columns">
-        <div class="content">
+        <div class="row alerter hidden">
+          <div class="small-12 columns">
+            <div data-alert class="alert-box"></div>
+          </div>
+        </div>
+        <div class="row content">
           <div id="bucket-actions" class="actions panel callout radius hidden">
             <span id="bucket-name" class="label secondary round"></span>
             <ul class="no-bullet">
-              <li><a href="#" id="rename-bucket-button" class="button">Rename bucket</a></li>
-              <li><a href="#" id="delete-bucket-button" class="button">Delete bucket</a></li>
+              <li><a href="#" id="rename-bucket-button" class="button"><i class="fi-pencil"></i> Rename bucket</a></li>
+              <li><a href="#" id="delete-bucket-button" class="button"><i class="fi-x"></i> Delete bucket</a></li>
             </ul>
             <div class="usage"></div>
           </div>
@@ -75,8 +85,9 @@
             <span id="file-name" class="label secondary round"></span>
             <ul class="no-bullet">
               <li><a href="#" id="download-file-button" class="button"><i class="fi-arrow-down"></i> Download file</a></li>
-              <li><a href="#" id="rename-file-button" class="button">Rename file</a></li>
-              <li><a href="#" id="delete-file-button" class="button">Delete file</a></li>
+              <li><a href="#" id="share-file-button" class="button"><i class="fi-share"></i> Share the file</a></li>
+              <li><a href="#" id="rename-file-button" class="button"><i class="fi-pencil"></i> Rename file</a></li>
+              <li><a href="#" id="delete-file-button" class="button"><i class="fi-x"></i> Delete file</a></li>
             </ul>
             <span class="usage"></span>
           </div>
@@ -166,6 +177,13 @@
     </div>
     <!-- A list of the uploaded files -->
     <ul id="uploaded" class="circle"></ul>
+  </div>
+
+  <div id="share-file-modal" class="reveal-modal small" data-reveal>
+    <h3>Share <span class="selected-file-name"></span></h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <p>Please copy and share this link:</p>
+    <span class="selected-file-link"></span>
   </div>
 
   <script type="text/javascript">

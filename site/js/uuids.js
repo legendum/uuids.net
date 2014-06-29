@@ -94,7 +94,6 @@ function getUsage() {
     var usage = response.usage
       , total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
       , pct = parseInt(total / usage.quota);
-console.log(usage);
     $('.usage').text('' + pct + '% of quota used');
   });
 }
@@ -298,12 +297,28 @@ exports.setup = function() {
     return deleteBucketFile();
   });
 
-  // Handle uploads
+  // Handle file uploads
   $('a#upload-files-button').on('click', function(e) {
     if (!$(e.target).hasClass('disabled')) {
       setupUploader();
       $('#upload-files-modal').foundation('reveal', 'open');
     }
+  });
+
+  // Handle file sharing
+  $('a#share-file-button').on('click', function(e) {
+    $('#share-file-modal .selected-file-name').text(_selected.file);
+    $('#share-file-modal .selected-file-link').html('<img class="spinner" src="../img/spinner.gif">');
+    $('#share-file-modal').foundation('reveal', 'open');
+    $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share')
+    .done(function(response) {
+      var uuid = response.bucket.share.uuid
+        , link = 'https://uuid.is/' + uuid
+        , html = '<a href="' + link + '">' + link + '</a>';
+      $('#share-file-modal .selected-file-link').html(html);
+    }).fail(function(jqXHR) {
+      var response = JSON.parse(jqXHR.responseText);
+    });
   });
 
   // Handle downloads

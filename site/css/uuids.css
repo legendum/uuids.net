@@ -137,3 +137,8 @@ a.button:hover {
 .small-print {
   font-size: 13px;
 }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+}
