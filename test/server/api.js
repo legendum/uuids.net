@@ -72,6 +72,24 @@ describe('api', function() {
         done();
       });
     });
+
+    it('should not create a bucket with the samae name', function(done) {
+      $bucketName = 'bucket1';
+      api.createBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName}, function(err, result) {
+        assert.equal(err.message, errors.BUCKET_EXISTS.message);
+        done();
+      });
+    });
+
+    it('should create another bucket', function(done) {
+      $bucketName = 'bucket2';
+      api.createBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName}, function(err, result) {
+        assert.isNull(err);
+        assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+        assert.equal(result.bucket.name, $bucketName);
+        done();
+      });
+    });
   });
 
   describe('setBucketFileData', function() {
@@ -97,11 +115,18 @@ describe('api', function() {
 
   describe('renameBucket', function() {
     it('should rename a bucket', function(done) {
-      $newBucketName = 'bucket2';
+      $newBucketName = 'bucket3';
       api.renameBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, newBucketName: $newBucketName}, function(err, result) {
         assert.isNull(err);
         assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
         assert.equal(result.bucket.name, $newBucketName);
+        done();
+      });
+    });
+
+    it('should not rename a bucket to an existing name', function(done) {
+      api.renameBucket({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, newBucketName: $newBucketName}, function(err, result) {
+        assert.equal(err.message, errors.BUCKET_EXISTS.message);
         done();
       });
     });
@@ -169,6 +194,26 @@ describe('api', function() {
     });
   });
 
+  describe('moveBucketFile', function() {
+    it('should move a bucket file', function(done) {
+      $bucketName = $newBucketName;
+      $newBucketName = 'bucket1';
+      api.moveBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename, newBucketName: $newBucketName}, function(err, result) {
+        assert.isNull(err);
+        assert.isNumber(result.files[$filename].created);
+        assert.isNumber(result.files[$filename].updated);
+        done();
+      });
+    });
+
+    it('should not move a bucket file to the same bucket', function(done) {
+      api.moveBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $filename, newBucketName: $newBucketName}, function(err, result) {
+        assert.equal(err.message, errors.FILE_EXISTS.message);
+        done();
+      });
+    });
+  });
+
   describe('renameBucketFile', function() {
     it('should rename a bucket file', function(done) {
       $newFilename = 'file2';
@@ -176,6 +221,13 @@ describe('api', function() {
         assert.isNull(err);
         assert.isTrue(utils.isDigest(result.file.uuidDigest));
         assert.equal(result.file.name, $newFilename);
+        done();
+      });
+    });
+
+    it('should not rename a bucket file to an existing name', function(done) {
+      api.renameBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $newBucketName, filename: $newFilename, newFilename: $newFilename}, function(err, result) {
+        assert.equal(err.message, errors.FILE_EXISTS.message);
         done();
       });
     });

@@ -34,8 +34,8 @@
     <a href="/"><img id="logo" src="/img/uuids-logo.png" alt="UUIDs"></a>
     <div id="header" class="row">
       <div id="buttons">
-        <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
-        <a href="#" id="logout-button" class="button hidden">Log out</a>
+        <a href="JavaScript:void(0)" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
+        <a href="JavaScript:void(0)" id="logout-button" class="button hidden">Log out</a>
       </div>
       <div id="title">UUIDs.net</div>
     </div>
@@ -47,7 +47,7 @@
           </div>
         </div>
         <div class="row content">
-          <a href="#" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-folder-add"></i> New bucket</a>
+          <a href="JavaScript:void(0)" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-folder-add"></i> New bucket</a>
           <div class="contained">
             <ul id="bucket-list" class="side-nav"></ul>
           </div>
@@ -60,7 +60,7 @@
           </div>
         </div>
         <div class="row content">
-          <a href="#" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
+          <a href="JavaScript:void(0)" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
           <div class="contained">
             <ul id="file-list" class="side-nav"></ul>
           </div>
@@ -76,18 +76,19 @@
           <div id="bucket-actions" class="actions panel callout hidden">
             <span id="bucket-name" class="label black round"></span>
             <ul class="no-bullet">
-              <li><a href="#" id="rename-bucket-button" class="button"><i class="fi-pencil"></i> Rename bucket</a></li>
-              <li><a href="#" id="delete-bucket-button" class="button"><i class="fi-x"></i> Delete bucket</a></li>
+              <li><a href="JavaScript:void(0)" id="rename-bucket-button" class="button"><i class="fi-pencil"></i> Rename bucket</a></li>
+              <li><a href="JavaScript:void(0)" id="delete-bucket-button" class="button"><i class="fi-x"></i> Delete bucket</a></li>
             </ul>
             <div class="usage"></div>
           </div>
           <div id="file-actions" class="actions panel callout hidden">
             <span id="file-name" class="label black round"></span>
             <ul class="no-bullet">
-              <li><a href="#" id="download-file-button" class="button"><i class="fi-arrow-down"></i> Download file</a></li>
-              <li><a href="#" id="share-file-button" class="button"><i class="fi-share"></i> Share the file</a></li>
-              <li><a href="#" id="rename-file-button" class="button"><i class="fi-pencil"></i> Rename file</a></li>
-              <li><a href="#" id="delete-file-button" class="button"><i class="fi-x"></i> Delete file</a></li>
+              <li><a href="JavaScript:void(0)" id="download-file-button" class="button"><i class="fi-arrow-down"></i> Download file</a></li>
+              <li><a href="JavaScript:void(0)" id="share-file-button" class="button"><i class="fi-torsos"></i> Share file link</a></li>
+              <li><a href="JavaScript:void(0)" id="rename-file-button" class="button"><i class="fi-pencil"></i> Rename file</a></li>
+              <li><a href="JavaScript:void(0)" id="delete-file-button" class="button"><i class="fi-x"></i> Delete file</a></li>
+              <li><a href="JavaScript:void(0)" id="move-file-button" class="button"><i class="fi-arrow-right"></i> Move file</a></li>
             </ul>
             <span class="usage"></span>
           </div>
@@ -184,6 +185,19 @@
     <a class="close-reveal-modal">&#215;</a>
     <p>To share the file, please copy this link:</p>
     <span class="selected-file-link"></span>
+  </div>
+
+  <div id="move-file-modal" class="reveal-modal small" data-reveal>
+    <h4 class="selected-file-name"></h4>
+    <div class="alerter hidden">
+      <div data-alert class="alert-box"></div>
+    </div>
+    <a class="close-reveal-modal">&#215;</a>
+    <p>Move file to:</p>
+    <form id="move-file-form">
+      <select id="select-bucket"></select>
+      <button class="button">Move file</button>
+    </form>
   </div>
 
   <script type="text/javascript">

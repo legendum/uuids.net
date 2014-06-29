@@ -42,6 +42,7 @@ var restify = require('restify')
     , uploadBucketFiles: ['POST', '/bucket/:bucketName/upload', BASIC_AUTH]
     , uploadBucketFile: ['POST', '/bucket/:bucketName/file/:filename', BASIC_AUTH]
     , renameBucketFile: ['POST', '/bucket/:bucketName/file/:filename/rename/:newFilename', BASIC_AUTH]
+    , moveBucketFile: ['POST', '/bucket/:bucketName/file/:filename/move/:newBucketName', BASIC_AUTH]
     , deleteBucketFile: ['POST', '/bucket/:bucketName/file/:filename/delete', BASIC_AUTH]
     , shareBucket: ['POST', '/bucket/:bucketName/share', BASIC_AUTH]
     , shareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/share', BASIC_AUTH]
@@ -248,7 +249,10 @@ API.method('getBucket', function(params, next) {
 
 API.method('renameBucket', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
+    var buckets;
     if (err) return next(err);
+    buckets = account.buckets() || {};
+    if (buckets[params.newBucketName]) return next(errors.BUCKET_EXISTS);
     account.renameBucket(params.bucketName, params.newBucketName, fnReturnDetails(next, {bucket: params.newBucketName}));
   });
 });
@@ -299,8 +303,8 @@ API.method('setBucketFileData', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
     account.getBucket(params.bucketName, function(err, bucket) {
-      var files = bucket.files() || {},
-          callback = fnReturnDetails(next, {file: params.filename});
+      var files = bucket.files() || {}
+        , callback = fnReturnDetails(next, {file: params.filename});
       if (err) return next(err);
       if (files[params.filename]) {
         bucket.updateFileData(params.filename, data, callback);
@@ -332,8 +336,38 @@ API.method('renameBucketFile', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
     account.getBucket(params.bucketName, function(err, bucket) {
+      var files;
       if (err) return next(err);
+      files = bucket.files() || {};
+      if (files[params.newFilename]) return next(errors.FILE_EXISTS);
       bucket.renameFile(params.filename, params.newFilename, fnReturnDetails(next, {file: params.newFilename}));
+    });
+  });
+});
+
+API.method('moveBucketFile', function(params, next) {
+  var filename = params.filename;
+  accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
+    if (err) return next(err);
+    account.getBucket(params.bucketName, function(err, bucket) {
+      var files, uuid;
+      if (err) return next(err);
+      files = bucket.files() || {};
+      uuid = bucket.objectUuid(filename);
+      if (!files[filename] || !uuid) return next(errors.FILE_MISSING);
+      account.getBucket(params.newBucketName, function(err, newBucket) {
+        var newFiles;
+        if (err) return next(err);
+        newFiles = newBucket.files() || {};
+        if (newFiles[filename]) return next(errors.FILE_EXISTS);
+        newBucket.objectUuid(filename, uuid);
+        bucket.objectUuid(filename, false);
+        newFiles[filename] = files[filename];
+        newBucket.files(newFiles);
+        delete(files[filename]);
+        bucket.files(files);
+        newBucket.details(next);
+      });
     });
   });
 });

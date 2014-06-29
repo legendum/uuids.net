@@ -6,7 +6,8 @@ var _session = null
     , file: null
     };
 
-function alertMessage($el, clss, message) {
+function alertMessage($el, message, clss) {
+  clss = clss || 'alert';
   $('.alert-box', $el).addClass(clss).text(message);
   $('.alerter', $el).show(400, function() {
     setTimeout(function() {
@@ -14,65 +15,6 @@ function alertMessage($el, clss, message) {
         $('.alert-box', $el).removeClass(clss).text('');
       });
     }, 5000);
-  });
-}
-
-function getBuckets() {
-  var $ul = $('#bucket-list');
-  if ($ul.length == 0) return;
-  $.get('/buckets')
-  .done(function(response) {
-    var buckets = [], bucket, $li, i;
-    $('#file-list').html('');
-    $ul.html('');
-    for (bucket in response.buckets) {
-      buckets.push(bucket);
-    }
-    buckets.sort();
-    for (i in buckets) {
-      bucket = buckets[i];
-      $li = $('<li/>').appendTo($ul);
-      $('<a href="JavaScript:void(0)">').text(bucket).appendTo($li);
-    }
-    $('#bucket-list a').click(function(e) {
-      _selected.bucket = $(e.target).text();
-      _selected.file = null;
-      $('#upload-files-button').removeClass('disabled');
-      $('#bucket-list a').removeClass('selected');
-      $(e.target).addClass('selected');
-      showActions();
-      getBucketFiles();
-    });
-  }).fail(function(jqXHR) {
-    var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#buckets'), 'alert', response.error);
-  });
-}
-
-function getBucketFiles() {
-  var $ul = $('#file-list');
-  $.get('/bucket/' + encodeURIComponent(_selected.bucket))
-  .done(function(response) {
-    var files = [], file, $li, i;
-    $ul.html('');
-    for (file in response.bucket.files) {
-      files.push(file);
-    }
-    files.sort();
-    for (i in files) {
-      file = files[i];
-      $li = $('<li/>').appendTo($ul);
-      $('<a href="JavaScript:void(0)">').text(file).appendTo($li);
-    }
-    $('#file-list a').click(function(e) {
-      _selected.file = $(e.target).text();
-      $('#file-list a').removeClass('selected');
-      $(e.target).addClass('selected');
-      showActions();
-    });
-  }).fail(function(jqXHR) {
-    var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), 'alert', response.error);
   });
 }
 
@@ -168,19 +110,87 @@ function submitAccountForm($form, path, successMessage) {
   }
   $.post(path, params)
   .done(function(response) {
-    alertMessage($form, 'success', successMessage);
+    alertMessage($form, successMessage, 'success');
     setupSession(params.nameDigest, response.session)
     setupButtons();
     window.location.pathname = '/app/files.html';
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($form, 'alert', response.error);
+    alertMessage($form, response.error);
   });
-  return false; // don't submit the form!
 }
 
 function createAccount($form) {
-  return submitAccountForm($form, '/signup', 'Account created');
+  submitAccountForm($form, '/signup', 'Account created');
+}
+
+function login($form) {
+  submitAccountForm($form, '/login', 'Login successful');
+}
+
+function logout() {
+  storeLocally('session', {});
+  setupButtons();
+  window.location.pathname = '/app/';
+}
+
+function getBuckets() {
+  var $ul = $('#bucket-list');
+  if ($ul.length == 0) return;
+  $.get('/buckets')
+  .done(function(response) {
+    var buckets = [], bucket, $li, i;
+    $('#file-list').html('');
+    $ul.html('');
+    for (bucket in response.buckets) {
+      buckets.push(bucket);
+    }
+    buckets.sort();
+    for (i in buckets) {
+      bucket = buckets[i];
+      $li = $('<li/>').appendTo($ul);
+      $('<a href="JavaScript:void(0)">').text(bucket).appendTo($li);
+    }
+    $('#bucket-list a').click(function(e) {
+      _selected.bucket = $(e.target).text();
+      _selected.file = null;
+      $('#upload-files-button').removeClass('disabled');
+      $('#bucket-list a').removeClass('selected');
+      $(e.target).addClass('selected');
+      showActions();
+      getBucketFiles();
+    });
+  }).fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#buckets'), response.error);
+  });
+}
+
+function getBucketFiles() {
+  var $ul = $('#file-list');
+  $.get('/bucket/' + encodeURIComponent(_selected.bucket))
+  .done(function(response) {
+    var files = [], file, $li, i;
+    $ul.html('');
+    for (file in response.bucket.files) {
+      files.push(file);
+    }
+    files.sort();
+    for (i in files) {
+      file = files[i];
+      $li = $('<li/>').appendTo($ul);
+      $('<a href="JavaScript:void(0)">').text(file).appendTo($li);
+    }
+    $('#file-list a').click(function(e) {
+      _selected.file = $(e.target).text();
+      $('#file-list a').removeClass('selected');
+      $(e.target).addClass('selected');
+      showActions();
+    });
+  }).fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#files'), response.error);
+  });
 }
 
 function createBucket($form) {
@@ -188,13 +198,12 @@ function createBucket($form) {
   $.post('/bucket/' + encodeURIComponent(bucket))
   .done(function(response) {
     getBuckets();
-    alertMessage($form, 'success', 'Bucket created');
+    alertMessage($form, 'Bucket created', 'success');
     $('a.close-reveal-modal', $form.parent()).trigger('click');
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($form, 'alert', response.error);
+    alertMessage($form, response.error);
   });
-  return false;
 }
 
 function renameBucket() {
@@ -207,6 +216,7 @@ function renameBucket() {
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#buckets'), response.error);
   });
 }
 
@@ -220,6 +230,35 @@ function deleteBucket() {
     getBuckets();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#buckets'), response.error);
+  });
+}
+
+function downloadBucketFile() {
+  var options = location.protocol == 'https:' ? {secure: true} : {};
+  options.path = '/';
+  $.cookie('nameDigest', _session.nameDigest, options);
+  $.cookie('session', _session.session, options);
+  window.open('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file))
+  setTimeout(function() {
+    $.removeCookie('nameDigest', options);
+    $.removeCookie('session', options);
+  }, 1000);
+}
+
+function shareBucketFile() {
+  $('#share-file-modal .selected-file-name').text(_selected.file);
+  $('#share-file-modal .selected-file-link').html('<img class="spinner" src="../img/spinner.gif">');
+  $('#share-file-modal').foundation('reveal', 'open');
+  $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share')
+  .done(function(response) {
+    var uuid = response.bucket.share.uuid
+      , link = 'https://uuid.is/' + uuid
+      , html = '<a target="share" href="' + link + '">' + link + '</a>';
+    $('#share-file-modal .selected-file-link').html(html);
+  }).fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#files'), response.error);
   });
 }
 
@@ -233,11 +272,12 @@ function renameBucketFile() {
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#files'), response.error);
   });
 }
 
 function deleteBucketFile() {
-  var ok = confirm('Are you sure you want to delete "' + _selected.bucket + '"?');
+  var ok = confirm('Are you sure you want to delete "' + _selected.file + '"?');
   if (ok === false) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/delete')
   .done(function(response) {
@@ -246,56 +286,81 @@ function deleteBucketFile() {
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
+    alertMessage($('#files'), response.error);
   });
 }
 
-function login($form) {
-  return submitAccountForm($form, '/login', 'Login successful');
+function moveBucketFile() {
+  var $select = $('#select-bucket');
+  $select.html('');
+  $('#move-file-modal .selected-file-name').text(_selected.file);
+  $('#bucket-list li').each(function(index) {
+    var bucket = $(this).text();
+    $('<option/>').text(bucket).appendTo($select);
+  });
+  $('#move-file-modal').foundation('reveal', 'open');
+  $('form#move-file-form').on('submit', function(e) {
+    var $form = $(e.target)
+      , bucket = $select.val();
+    $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/move/' + encodeURIComponent(bucket))
+    .done(function(response) {
+      _selected.file = null;
+      showActions();
+      getBucketFiles();
+      $('a.close-reveal-modal', $form.parent()).trigger('click');
+    }).fail(function(jqXHR) {
+      var response = JSON.parse(jqXHR.responseText);
+      alertMessage($('#move-file-modal'), response.error);
+    });
+  });
 }
 
 exports.setup = function() {
 
+  /**********
+   * Accounts
+   */
+
   // Handle new signups
   $('form#create-account-form').on('submit', function(e) {
-    return createAccount($(e.target));
+    createAccount($(e.target));
+    return false;
   });
 
   // Handle logins
   $('form#login-form').on('submit', function(e) {
-    return login($(e.target));
+    login($(e.target));
+    return false;
   });
 
   // Handle logouts
   $('a#logout-button').on('click', function(e) {
-    storeLocally('session', {});
-    setupButtons();
-    window.location.pathname = '/app/';
+    logout();
   });
+
+  /*********
+   * Buckets
+   */
 
   // Handle new buckets
   $('form#create-bucket-form').on('submit', function(e) {
-    return createBucket($(e.target));
+    createBucket($(e.target));
+    return false;
   });
 
   // Handle renamed buckets
   $('a#rename-bucket-button').on('click', function(e) {
-    return renameBucket();
+    renameBucket();
   });
 
   // Handle deleted buckets
   $('a#delete-bucket-button').on('click', function(e) {
-    return deleteBucket();
+    deleteBucket();
   });
 
-  // Handle renamed files
-  $('a#rename-file-button').on('click', function(e) {
-    return renameBucketFile();
-  });
-
-  // Handle deleted files
-  $('a#delete-file-button').on('click', function(e) {
-    return deleteBucketFile();
-  });
+  /*******
+   * Files
+   */
 
   // Handle file uploads
   $('a#upload-files-button').on('click', function(e) {
@@ -305,36 +370,35 @@ exports.setup = function() {
     }
   });
 
-  // Handle file sharing
-  $('a#share-file-button').on('click', function(e) {
-    $('#share-file-modal .selected-file-name').text(_selected.file);
-    $('#share-file-modal .selected-file-link').html('<img class="spinner" src="../img/spinner.gif">');
-    $('#share-file-modal').foundation('reveal', 'open');
-    $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share')
-    .done(function(response) {
-      var uuid = response.bucket.share.uuid
-        , link = 'https://uuid.is/' + uuid
-        , html = '<a target="share" href="' + link + '">' + link + '</a>';
-      $('#share-file-modal .selected-file-link').html(html);
-    }).fail(function(jqXHR) {
-      var response = JSON.parse(jqXHR.responseText);
-    });
-  });
-
   // Handle downloads
   $('a#download-file-button').on('click', function(e) {
-    var options = location.protocol == 'https:' ? {secure: true} : {};
-    options.path = '/';
-    $.cookie('nameDigest', _session.nameDigest, options);
-    $.cookie('session', _session.session, options);
-    window.open('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file))
-    setTimeout(function() {
-      $.removeCookie('nameDigest', options);
-      $.removeCookie('session', options);
-    }, 1000);
+    downloadBucketFile();
   });
 
-  // Setup the buttons, session and uploader
+  // Handle file sharing
+  $('a#share-file-button').on('click', function(e) {
+    shareBucketFile();
+  });
+
+  // Handle renamed files
+  $('a#rename-file-button').on('click', function(e) {
+    renameBucketFile();
+  });
+
+  // Handle deleted files
+  $('a#delete-file-button').on('click', function(e) {
+    deleteBucketFile();
+  });
+
+  // Handle file moves
+  $('a#move-file-button').on('click', function(e) {
+    moveBucketFile();
+  });
+
+  /****
+   * UI
+   */
+
   setupSession();
   setupButtons();
   getBuckets();
