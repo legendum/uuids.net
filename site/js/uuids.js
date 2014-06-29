@@ -312,6 +312,7 @@ function moveBucketFile() {
       var response = JSON.parse(jqXHR.responseText);
       alertMessage($('#move-file-modal'), response.error);
     });
+    return false;
   });
 }
 
