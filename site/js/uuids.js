@@ -261,7 +261,7 @@ function shareBucketFile() {
     $('#share-file-modal .selected-file-link').html(html);
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -270,10 +270,10 @@ function unshareBucketFile() {
   if (ok === false) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/unshare')
   .done(function(response) {
-    alertMessage($('#files'), 'File is not shared', 'success');
+    alertMessage($('#actions'), 'File is not shared', 'success');
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -287,7 +287,7 @@ function renameBucketFile() {
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
@@ -301,7 +301,7 @@ function deleteBucketFile() {
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
-    alertMessage($('#files'), response.error);
+    alertMessage($('#actions'), response.error);
   });
 }
 
