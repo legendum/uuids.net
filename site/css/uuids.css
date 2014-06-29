@@ -136,8 +136,13 @@ a.button:hover {
 }
 
 #footer .content {
+  text-align: center;
   font-size: 12px;
   color: #999;
+  background-color: #123;
+  border-radius: 12px;
+  padding: 4px;
+  opacity: 0.8;
 }
 
 .small-print {
