@@ -29,6 +29,11 @@ fieldset {
   padding-top: 60px;
 }
 
+.black {
+  color: #ddd;
+  background-color: #222;
+}
+
 .contained {
   height: 500px;
   border: 1px solid #998;
