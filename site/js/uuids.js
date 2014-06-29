@@ -138,7 +138,7 @@ function logout() {
 function getBuckets() {
   var $ul = $('#bucket-list');
   if ($ul.length == 0) return; // e.g. when on the index.html page
-  $ul.html('<li>&nbsp;' + _spinner + '</li>');
+  $ul.html('<li>&nbsp;&nbsp;&nbsp;' + _spinner + '</li>');
   $.get('/buckets')
   .done(function(response) {
     var buckets = [], bucket, $li, i;
