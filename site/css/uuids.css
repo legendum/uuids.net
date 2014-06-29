@@ -25,10 +25,8 @@ fieldset {
   color: #777;
 }
 
-#actions .content {
-  position: absolute;
-  top: 60px;
-  width: 100%;
+.spacer60px {
+  height: 60px;
 }
 
 .black {
