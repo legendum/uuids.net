@@ -314,7 +314,7 @@ exports.setup = function() {
     .done(function(response) {
       var uuid = response.bucket.share.uuid
         , link = 'https://uuid.is/' + uuid
-        , html = '<a href="' + link + '">' + link + '</a>';
+        , html = '<a target="share" href="' + link + '">' + link + '</a>';
       $('#share-file-modal .selected-file-link').html(html);
     }).fail(function(jqXHR) {
       var response = JSON.parse(jqXHR.responseText);
