@@ -22,12 +22,13 @@ function alertMessage($el, message, clss) {
 
 function showActions() {
   $('#actions .actions').addClass('hidden');
-  if (_selected.file) {
+  if (_selected.bucket && _selected.file) {
     $('#file-name').text(_selected.file);
-    $('#file-size').text(formatSize(_sizes[_selected.file]));
+    $('#file-size').text(formatSize(_sizes[_selected.bucket][_selected.file]));
     $('#file-actions').removeClass('hidden');
   } else if (_selected.bucket) {
     $('#bucket-name').text(_selected.bucket);
+    $('#bucket-size').text(formatSize(_sizes[_selected.bucket].__totalSize));
     $('#bucket-actions').removeClass('hidden');
   }
   getUsage();
@@ -168,7 +169,6 @@ function getBuckets() {
       $('#upload-files-button').removeClass('disabled');
       $('#bucket-list a').removeClass('selected');
       $(e.target).addClass('selected');
-      showActions();
       getBucketFiles();
     });
   }).fail(function(jqXHR) {
@@ -182,12 +182,17 @@ function getBucketFiles() {
   $ul.html('<li>&nbsp;&nbsp;&nbsp;' + _spinner + '</li>');
   $.get('/bucket/' + encodeURIComponent(_selected.bucket))
   .done(function(response) {
-    var files = [], file, $li, i;
+    var files = [], file, $li, i, size, totalSize = 0;
     $ul.html('');
+    _sizes[_selected.bucket] = {};
     for (file in response.bucket.files) {
-      _sizes[file] = response.bucket.files[file].size;
+      size = response.bucket.files[file].size;
+      _sizes[_selected.bucket][file] = size;
+      totalSize += size;
       files.push(file);
     }
+    _sizes[_selected.bucket].__totalSize = totalSize;
+    showActions();
     files.sort();
     for (i in files) {
       file = files[i];
@@ -224,6 +229,7 @@ function renameBucket() {
   if (name === null) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/rename/' + encodeURIComponent(name))
   .done(function(response) {
+    _sizes[name] = _sizes[_selected.bucket];
     _selected.bucket = name;
     showActions();
     getBuckets();
@@ -238,6 +244,7 @@ function deleteBucket() {
   if (ok === false) return;
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/delete')
   .done(function(response) {
+    delete(_sizes[_selected.bucket]);
     _selected.bucket = null;
     showActions();
     getBuckets();
@@ -293,7 +300,6 @@ function renameBucketFile() {
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/rename/' + encodeURIComponent(name))
   .done(function(response) {
     _selected.file = name;
-    showActions();
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
@@ -307,7 +313,6 @@ function deleteBucketFile() {
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/delete')
   .done(function(response) {
     _selected.file = null;
-    showActions();
     getBucketFiles();
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
@@ -330,7 +335,6 @@ function moveBucketFile() {
     $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/move/' + encodeURIComponent(bucket))
     .done(function(response) {
       _selected.file = null;
-      showActions();
       getBucketFiles();
       $('a.close-reveal-modal', $form.parent()).trigger('click');
     }).fail(function(jqXHR) {
