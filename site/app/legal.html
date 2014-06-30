@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
+<head>
+  <title>UUIDs.net</title>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" type="image/png" href="../img/uuids-logo.png">
+  <link type="text/css" rel="stylesheet" href="../css/normalize.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation.min.css">
+  <link type="text/css" rel="stylesheet" href="../css/foundation-icons.css">
+  <link type="text/css" rel="stylesheet" href="../css/uuids.css">
+
+  <script type="text/javascript" src="../js/vendor/modernizr.js"></script>
+  <script type="text/javascript" src="../js/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="../js/foundation.min.js"></script>
+  <script type="text/javascript" src="../js/foundation/foundation.reveal.js"></script>
+  <script type="text/javascript" src="../js/foundation/foundation.tooltip.js"></script>
+  <script type="text/javascript" src="../js/vendor/sha256.js"></script>
+  <script type="text/javascript" src="../js/uuids.js"></script>
+  <script type="text/javascript">
+  $(function() { uuids.setup() });
+  </script>
+</head>
+<body>
+  <div id="surround">
+    <a href="/"><img id="logo" src="/img/uuids-logo.png" alt="UUIDs"></a>
+    <div id="header" class="row">
+      <div id="buttons">
+        <a href="#" id="login-button" data-reveal-id="login-modal" class="button">Log in</a>
+        <a href="/app/files.html" id="files-button" class="button hidden"><i class="fi-page-multiple"></i> My files</a>
+        <a href="#" id="logout-button" class="button hidden">Log out</a>
+      </div>
+      <div id="title">UUIDs.net</div>
+    </div>
+    <div id="page" class="row">
+      <div class="medium-8 columns">
+        <div class="content">
+          <h3>Our Terms &amp; Conditions</h3>
+          <p>
+            In the following, "service" refers to the secure internet storage service at <a href="https://uuids.net/">UUIDs.net</a> provided by Kevin Hutchinson and associates (henceforth "we").
+          </p>
+
+          <h4>Our Commitment to You</h4>
+          <p>
+            We cannot guarantee that the service will always be available, but we will do our best to make it available at all times. We promise that all uploaded files are encrypted before storage, and that our encryption renders files unreadable to anyone except the uploader (and those with whom the file has been shared by the uploader), the only exception being if the uploader allows a third party to know the account name and password, or any of the links to shared files.
+          </p>
+
+          <h4>Your Commitment to Us</h4>
+          <p>
+            By signing up to use the service, you accept and agree to the following:
+            <ol>
+              <li>You may not store any data that is considered illegal in Iceland or the EU.</li>
+              <li>You may not use the service for activities considered illegal in Iceland or the EU.</li>
+              <li>You accept that we may revoke access to your account at any time without reason.</li>
+              <li>You accept that, although <i>very unlikely</i>, your stored data may be lost.</li>
+              <li>You promise to say good things about us to your friends and family!</li>
+            </ol>
+          </p>
+
+          <h4>How can I join?</h4>
+          <p>
+            Tweet to <a target="tweet" href="https://twitter.com/uuids">@UUIDs</a> to <span class="hilite">request an invitation code</span>.
+          </p>
+        </div>
+      </div>
+      <div class="medium-4 columns">
+        <div class="content">
+          <h3>Got an invitation?</h3>
+          <form id="create-account-form" method="post"><fieldset>
+            <div class="row alerter hidden">
+              <div class="small-12 columns">
+                <div data-alert class="alert-box"></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-12 columns">
+                <label>Account name
+                  <input name="name" type="text">
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="medium-12 columns">
+                <label>Password
+                  <input name="password" type="password">
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-12 columns">
+                <label>Invitation code
+                  <input name="invitation" type="text">
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="small-10 columns">
+                <button class="button">Create account</button>
+              </div>
+            </div>
+          </fieldset></form>
+
+          <h5>Want an invitation?</h5>
+          <p>
+            <a href="https://twitter.com/intent/tweet?screen_name=UUIDs" class="twitter-mention-button" data-size="large" data-related="UUIDs,UUIDs">Tweet to @UUIDs</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+          </p>
+
+          <p class="small-print">
+            We have a zero tolerance policy for illegal file storage and sharing. See our <a href="legal.html">terms &amp; conditions</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="footer" class="row">
+      <div class="medium-12 columns">
+        <div class="content">
+          Copyright &copy; 2014 Kevin Hutchinson. Licensed under the <a target="agpl" href="http://www.gnu.org/licenses/agpl-3.0.html">AGPL V3 License</a>.
+          By using <a href="https://uuids.net/">UUIDs.net</a> you accept our <a href="legal.html">terms &amp; conditions</a>.
+          Contact <a target="tweet" href="https://twitter.com/uuids">@UUIDs</a>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="login-modal" class="reveal-modal small" data-reveal>
+    <h3>Login</h3>
+    <a class="close-reveal-modal">&#215;</a>
+    <form id="login-form" method="post"><fieldset>
+      <div class="row alerter hidden">
+        <div class="small-12 columns">
+          <div data-alert class="alert-box"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-12 columns">
+          <label>Account name
+            <input name="name" type="text">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="medium-12 columns">
+          <label>Password
+            <input name="password" type="password">
+          </label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="small-10 columns">
+          <button id="login-button" class="button">Login</button>
+        </div>
+      </div>
+    </fieldset></form>
+    <p class="small-print text-center">
+      Sorry, we cannot send password reset links or reminders.
+    </p>
+  </div>
+
+  <script type="text/javascript">
+    $(document).foundation();
+  </script>
+</body>
+</html>
