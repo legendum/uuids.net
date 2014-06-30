@@ -28,18 +28,6 @@ Utils.method('quit', function() {
   process.exit();
 });
 
-Utils.method('ipAddress', function(argv) {
-  return argv.ip || '0.0.0.0';
-});
-
-Utils.method('port', function(argv) {
-  var port = argv.port;
-  if (!port) {
-    this.quit("usage: %s --port=2219", argv.$0)
-  }
-  return port;
-});
-
 Utils.method('digest', function(data, sha, out) {
   sha = sha || 'sha1';
   out = out || 'hex'; if (out == 'none') out = null;

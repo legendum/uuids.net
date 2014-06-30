@@ -9,7 +9,10 @@ var os = require('os')
   , restify = require('restify') // See http://mcavage.github.io/node-restify
   , utils = require('./utils')
   , env = require('./env')(process.env.UUIDS_ENV || 'production')
-  , api = require('./api');
+  , api = require('./api')
+
+  , DEFAULT_PORT = env.UUIDS_PORT || '2219'
+  , DEFAULT_IP_ADDRESS = env.UUIDS_IP_ADDRESS || '0.0.0.0';
 
 function Server(argv) { this.argv = argv }
 module.exports = Server;
@@ -50,5 +53,9 @@ Server.method('start', function(next) {
     if (next) next();
   }
   restServer.pre(restify.pre.userAgentConnection()); // For "curl" clients
-  restServer.listen(utils.port(this.argv) , utils.ipAddress(this.argv), run);
+  restServer.listen(
+    this.argv.port || DEFAULT_PORT
+  , this.argv.ip || DEFAULT_IP_ADDRESS
+  , run
+  );
 });

@@ -9,18 +9,6 @@ var assert = require('chai').assert
 
 describe('utils', function() {
 
-  describe('ipAddress', function() {
-    it('should default to 1.2.3.4', function() {
-      assert.equal(utils.ipAddress(argv), '1.2.3.4');
-    })
-  })
-
-  describe('port', function() {
-    it('should default to 1234', function() {
-      assert.equal(utils.port(argv), '1234');
-    })
-  })
-
   describe('digest', function() {
     it('should calculate the digest of "gherkins"', function() {
       assert.equal(utils.digest('gherkins', 'sha1'), '93b19ab44977ffb78d2ae8248613d11b2bce2c42');
