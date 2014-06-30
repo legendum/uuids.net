@@ -23,9 +23,18 @@ Bucket.prototype.__proto__ = Info.prototype;
 Info.properties(Bucket, PROPERTIES);
 module.exports = Bucket;
 
+function getShares(bucket) {
+  var shared = bucket.shares() || {};
+  for (uuid in shared) {
+    shared[uuid].active = shares.access(uuid) ? true : false;
+  }
+  return shared;
+}
+
 Bucket.method('details', function(next) {
-  var files = this.files() || {}
-    , shared = this.shares() || {}
+  var uuid
+    , files = this.files() || {}
+    , shared = getShares(this)
     , created = this.created();
   next(null, {files: files, shares: shared, created: created});
 });
@@ -137,20 +146,21 @@ Bucket.method('deleteFile', function(filename, next) {
 });
 
 Bucket.method('share', function(next) {
-  var sharePartUuid = shares.create(this.uuid)
+  var sharePartUuid = shares.create({uuid: this.uuid})
     , shared = this.shares() || {};
-  shared[sharePartUuid] = {type: 'bucket', active: true, created: utils.time()};
+  shared[sharePartUuid] = {type: 'bucket', created: utils.time()};
   this.shares(shared);
   next(null, sharePartUuid);
 });
 
-Bucket.method('shareFile', function(filename, next) {
+Bucket.method('shareFile', function(filename, options, next) {
   var my = this;
+  options = options || {};
   this.getFile(filename, function(err, file) {
     if (err) return next(err);
-    var sharePartUuid = shares.create(file.uuid)
+    var sharePartUuid = shares.create({uuid: file.uuid, once: !!options.once})
       , shared = my.shares() || {};
-    shared[sharePartUuid] = {type: 'file', name: filename, active: true, created: utils.time()};
+    shared[sharePartUuid] = {type: 'file', name: filename, created: utils.time()};
     my.shares(shared);
     next(null, sharePartUuid);
   });
@@ -158,10 +168,9 @@ Bucket.method('shareFile', function(filename, next) {
 
 Bucket.method('toggleShare', function(sharePartUuid, next) {
   var shared = this.shares() || {};
-  shared[sharePartUuid].active = !shared[sharePartUuid].active;
   shares.toggle(sharePartUuid);
   this.shares(shared);
-  if (next) next(null, shared); // optional async
+  if (next) next(null, getShares(this)); // optional async
 });
 
 Bucket.method('deleteShare', function(sharePartUuid, next) {

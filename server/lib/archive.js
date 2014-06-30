@@ -35,7 +35,7 @@ function aws(archive, method, filepath, next) {
 
   if (method == 'putObject') params.Body = fs.createReadStream(filepath);
 
-  if (env.AWS_PROFILE) {
+  if (env.UUIDS_ENV != 'test' && env.AWS_PROFILE) {
     utils.lock(filepath);
     archive.S3[method](params, function (err) {
       if (err) return next(err);
@@ -64,7 +64,10 @@ Archive.method('restore', function(filepath, next) {
     , params = {Bucket: bucket, Key: filename}
     , wstream;
 
-  if (utils.exists(filepath) || this.restored(filename) || !env.AWS_PROFILE) {
+  if (utils.exists(filepath) ||
+      this.restored(filename) ||
+      env.UUIDS_ENV == 'test' ||
+      !env.AWS_PROFILE) {
     nextTick(next);
   } else { // no file, and no restore attempt made, and we have an AWS profile
     wstream = null;

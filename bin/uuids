@@ -74,9 +74,9 @@ var UUIDS = (function(cmd) {
   }
 
   function setUsageState(uuidSharedPart, state) {
-    var uuid = shares.access(uuidSharedPart)
-    if (!uuid) return false;
-    new File(uuid, function(err, file) {
+    var share = shares.access(uuidSharedPart)
+    if (!share) return false;
+    new File(share.uuid, function(err, file) {
       if (err && !err.message.match(/suspended/)) utils.quit(err);
       file.usageObject().state(state);
       utils.quit("account owning share %s is now %s", uuidSharedPart, state);
@@ -109,7 +109,7 @@ var UUIDS = (function(cmd) {
   function quota() {
     var gb = parseInt(argv._[1]);
     if (gb > 0) {
-      utils.quit(quotas.create('' + (gb * 1000000000)));
+      utils.quit(quotas.create(gb * 1000000000));
     } else {
       utils.quit("usage: uuids quota <gb>");
     }

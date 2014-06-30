@@ -274,7 +274,7 @@ describe('api', function() {
   describe('quota', function() {
     it('should set the account quota', function(done) {
       var bytes = 1234567
-        , uuid = quotas.create('' + bytes);
+        , uuid = quotas.create(bytes);
       api.quota({nameDigest: $nameDigest, sessionPartKey: $partKey, quotaUuid: uuid}, function(err, usage) {
         assert.isNull(err);
         assert.isTrue(usage.quota > Account.DEFAULT_QUOTA + bytes - TINY_STORAGE_CHARGE);

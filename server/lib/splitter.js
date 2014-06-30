@@ -24,7 +24,8 @@ function Splitter(storeName, paddingBits) {
 module.exports = Splitter;
 
 Splitter.method('create', function(secret) {
-  var secretHex = s4.str2hex(secret)
+  var secretStr = JSON.stringify(secret)
+    , secretHex = s4.str2hex(secretStr)
     , shares = s4.share(secretHex, 2, 2, this.paddingBits)
     , storedPart = shares[0]
     , sharedPart = shares[1]
@@ -35,15 +36,12 @@ Splitter.method('create', function(secret) {
   return uuidOfPart;
 });
 
-Splitter.method('access', function(uuidOfPart, skipUuidCheck) {
+Splitter.method('access', function(uuidOfPart) {
   var sharedPart = this.store.readWrapped(uuidOfPart)
-    , storedPart = this.store.readWrapped(sharedPart)
-    , hiddenUuid;
+    , storedPart = this.store.readWrapped(sharedPart);
   if (!storedPart) return null;
   try {
-    hiddenUuid = s4.hex2str(s4.combine( [storedPart, sharedPart] ));
-    if (!hiddenUuid) return null;
-    return (skipUuidCheck || utils.isUuid(hiddenUuid) ? hiddenUuid : null);
+    return JSON.parse( s4.hex2str(s4.combine( [storedPart, sharedPart] )) );
   } catch (e) {
     return null;
   }

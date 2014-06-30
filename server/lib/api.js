@@ -47,6 +47,7 @@ var restify = require('restify')
     , shareBucket: ['POST', '/bucket/:bucketName/share', BASIC_AUTH]
     , shareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/share', BASIC_AUTH]
     , unshareBucketFile: ['POST', '/bucket/:bucketName/file/:filename/unshare', BASIC_AUTH]
+    , shareBucketFileOnce: ['POST', '/bucket/:bucketName/file/:filename/share/once', BASIC_AUTH]
     , toggleShare: ['POST', '/bucket/:bucketName/share/:uuidSharedPart/toggle', BASIC_AUTH]
     , deleteShare: ['POST', '/bucket/:bucketName/share/:uuidSharedPart/delete', BASIC_AUTH]
     , getSharedBucketFileKey: ['GET', '/shared/bucket/:uuidSharedPart/file/:filename/:key']
@@ -74,8 +75,8 @@ function fnReturnDetails(next, hash) {
   return function(err, object) {
     if (err) return next(err);
     result[type] = {
-      name: name,
-      uuidDigest: utils.digest(object.uuid)
+      name: name
+    , uuidDigest: utils.digest(object.uuid)
     };
     for (var key in data) {
       result[type][key] = data[key];
@@ -196,9 +197,9 @@ API.method('logout', function(params, next) {
 
 API.method('quota', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
-    var quotaToAdd, usage, skipUuidCheck = true;
+    var quotaToAdd, usage;
     if (err) return next(err);
-    quotaToAdd = parseInt(quotas.access(params.quotaUuid, skipUuidCheck));
+    quotaToAdd = parseInt(quotas.access(params.quotaUuid));
     if (!quotaToAdd) return next(errors.QUOTA_MISSING);
     quotas.delete(params.quotaUuid); // so we can't use the quota twice
     account.usageObject.quota(account.usageObject.quota() + quotaToAdd);
@@ -392,9 +393,9 @@ API.method('shareBucket', function(params, next) {
       if (err) return next(err);
       bucket.share(function(err, uuidSharedPart) {
         var callback, share = {
-          type: 'bucket',
-          name: params.bucketName,
-          uuid: uuidSharedPart
+          type: 'bucket'
+        , name: params.bucketName
+        , uuid: uuidSharedPart
         };
         if (err) return next(err);
         callback = fnReturnDetails(next, {
@@ -411,12 +412,14 @@ API.method('shareBucketFile', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
     account.getBucket(params.bucketName, function(err, bucket) {
+      var options = {once: !!params.once};
       if (err) return next(err);
-      bucket.shareFile(params.filename, function(err, uuidSharedPart) {
+      bucket.shareFile(params.filename, options, function(err, uuidSharedPart) {
         var callback, share = {
-          type: 'file',
-          name: params.filename,
-          uuid: uuidSharedPart
+          type: 'file'
+        , name: params.filename
+        , uuid: uuidSharedPart
+        , once: options.once
         };
         if (err) return next(err);
         callback = fnReturnDetails(next, {
@@ -427,6 +430,11 @@ API.method('shareBucketFile', function(params, next) {
       });
     });
   });
+});
+
+API.method('shareBucketFileOnce', function(params, next) {
+  params.once = true;
+  this.shareBucketFile(params, next);
 });
 
 API.method('unshareBucketFile', function(params, next) {
@@ -466,7 +474,8 @@ API.method('deleteShare', function(params, next) {
 });
 
 API.method('getSharedBucket', function(params, next) {
-  var bucketUuid = shares.access(params.uuidSharedPart)
+  var share = shares.access(params.uuidSharedPart)
+    , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
   if (!bucketUuid) return next(errors.BUCKET_MISSING);
@@ -481,7 +490,8 @@ API.method('getSharedBucket', function(params, next) {
 });
 
 API.method('getSharedBucketFile', function(params, next) {
-  var bucketUuid = shares.access(params.uuidSharedPart)
+  var share = shares.access(params.uuidSharedPart)
+    , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
   if (!bucketUuid) return next(errors.BUCKET_MISSING);
@@ -497,7 +507,8 @@ API.method('getSharedBucketFile', function(params, next) {
 });
 
 API.method('getSharedBucketFileKey', function(params, next) {
-  var bucketUuid = shares.access(params.uuidSharedPart)
+  var share = shares.access(params.uuidSharedPart)
+    , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
   if (!bucketUuid) return next(errors.BUCKET_MISSING);
@@ -517,9 +528,11 @@ API.method('getSharedBucketFileKey', function(params, next) {
 });
 
 API.method('getSharedFile', function(params, next) {
-  var uuid = shares.access(params.uuidSharedPart)
+  var share = shares.access(params.uuidSharedPart)
+    , uuid = share ? share.uuid : null
     , callback;
   if (!uuid) return next(errors.FILE_MISSING);
+  if (share.once) shares.toggle(params.uuidSharedPart);
   new File(uuid, function(err, file) {
     if (err) return next(err);
     next(null, function(req, res, next) {
@@ -529,7 +542,8 @@ API.method('getSharedFile', function(params, next) {
 });
 
 API.method('getSharedFileKey', function(params, next) {
-  var uuid = shares.access(params.uuidSharedPart)
+  var share = shares.access(params.uuidSharedPart)
+    , uuid = share ? share.uuid : null
     , callback;
   if (!uuid) return next(errors.FILE_MISSING);
   new File(uuid, function(err, file) {

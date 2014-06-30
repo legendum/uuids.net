@@ -82,7 +82,7 @@ describe('Bucket', function() {
         assert.isTrue(utils.isUuid(sharePartUuid));
         $share = sharePartUuid;
         $bucket.details(function(err, details) {
-          assert.isTrue(details.shares[$share].active);
+          assert.isNumber(details.shares[$share].created);
           assert.equal(details.shares[$share].type, 'bucket');
           done();
         });
@@ -94,12 +94,10 @@ describe('Bucket', function() {
     it('should toggle a share to enable/disable it', function(done) {
       $bucket.toggleShare($share, function(err, shared) {
         assert.isNull(err);
-        assert.isFalse(shared[$share].active);
         assert.isNull(shares.access($share));
         $bucket.toggleShare($share, function(err, shared) {
           assert.isNull(err);
-          assert.isTrue(shared[$share].active);
-          assert.isTrue(utils.isUuid(shares.access($share)));
+          assert.isTrue(utils.isUuid(shares.access($share).uuid));
           done();
         });
       });
@@ -117,7 +115,7 @@ describe('Bucket', function() {
 
   describe('shareFile', function() {
     it('should share a file', function(done) {
-      $bucket.shareFile($filename, function(err, sharePartUuid) {
+      $bucket.shareFile($filename, {once: true}, function(err, sharePartUuid) {
         assert.isNull(err);
         assert.isTrue(utils.isUuid(sharePartUuid));
         $share = sharePartUuid;

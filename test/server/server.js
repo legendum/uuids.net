@@ -407,6 +407,29 @@ describe('server', function() {
     })
   });
 
+  describe('POST /bucket/bucket2/file/file2/share/once', function() {
+    it('should share a file once', function(done) {
+      unirest.post(URL + 'bucket/bucket2/file/file2/share/once')
+        .auth($nameDigest, $session)
+        .end(function(response) {
+          var result = response.body;
+          assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+          assert.equal(result.bucket.name, 'bucket2');
+          assert.equal(result.bucket.share.type, 'file');
+          assert.equal(result.bucket.share.name, 'file2');
+          assert.isTrue(result.bucket.share.once);
+          assert.isTrue(utils.isUuid(result.bucket.share.uuid));
+          assert.isTrue(shares.access(result.bucket.share.uuid).once);
+          unirest.get(URL + 'shared/file/' + result.bucket.share.uuid)
+            .end(function(response) {
+              // Prove we can only access the shared file once
+              assert.isNull(shares.access(result.bucket.share.uuid));
+              done();
+            });
+        });
+    });
+  });
+
   describe('POST /bucket/bucket2/file/file2/share', function() {
     it('should share a file', function(done) {
       unirest.post(URL + 'bucket/bucket2/file/file2/share')
@@ -417,6 +440,7 @@ describe('server', function() {
           assert.equal(result.bucket.name, 'bucket2');
           assert.equal(result.bucket.share.type, 'file');
           assert.equal(result.bucket.share.name, 'file2');
+          assert.isFalse(result.bucket.share.once);
           assert.isTrue(utils.isUuid(result.bucket.share.uuid));
           $shareFileUuid = result.bucket.share.uuid;
           done();
@@ -556,7 +580,7 @@ describe('server', function() {
 
     it('should increase the quota', function(done) {
       var bytes = 123456789;
-      $quotaUuid = quotas.create('' + bytes);
+      $quotaUuid = quotas.create(bytes);
       unirest.post(URL + 'quota/' + $quotaUuid)
         .auth($nameDigest, $session)
         .end(function(response) {
