@@ -107,12 +107,11 @@ var UUIDS = (function(cmd) {
   }
 
   function quota() {
-    var bytes = parseInt(argv._[1]);
-    if (bytes > 0) {
-      bytes = new 
-      utils.quit(quotas.create('' + bytes));
+    var gb = parseInt(argv._[1]);
+    if (gb > 0) {
+      utils.quit(quotas.create('' + (gb * 1000000000)));
     } else {
-      utils.quit("usage: uuids quota <bytes>");
+      utils.quit("usage: uuids quota <gb>");
     }
   }
 
