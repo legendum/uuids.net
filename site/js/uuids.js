@@ -41,14 +41,36 @@ function formatSize(size) {
   return '' + size + ' bytes';
 }
 
+function showUsage(usage) {
+  var total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
+    , pct = parseInt(100 * total / usage.quota);
+  $('.usage').html('').text('' + pct + '% of ' + formatSize(usage.quota) + ' quota used').append(' - <a href="JavaScript:uuids.addQuota()">add more</a>');
+}
+
 function getUsage() {
   $.get('/usage')
   .done(function(response) {
-    var usage = response.usage
-      , total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
-      , pct = parseInt(100 * total / usage.quota);
-    $('.usage').text('' + pct + '% of ' + formatSize(usage.quota) + ' quota used');
+    showUsage(response.usage);
+  })
+  .fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage('#actions', response.error);
   });
+}
+
+exports.addQuota = function() {
+  var uuid = prompt("Enter the quota code from @UUIDs:");
+  if (!uuid) return false;
+  $.post('/quota/' + uuid)
+  .done(function(response) {
+    alertMessage('#actions', 'Quota increased', 'success');
+    showUsage(response.usage);
+  })
+  .fail(function(jqXHR) {
+    var response = JSON.parse(jqXHR.responseText);
+    alertMessage('#actions', response.error);
+  });
+  return false;
 }
 
 function setupButtons() {

@@ -30,6 +30,7 @@ var path = require('path')
   , $newPasswordDigest = utils.digest('puppy')
   , $invitation = invites.create(utils.uuid())
   , $quota
+  , $quotaUuid
   , $session
   , $shareBucketUuid
   , $shareFileUuid
@@ -553,16 +554,26 @@ describe('server', function() {
         });
     });
 
-    it('should set the quota', function(done) {
-      var bytes = 123456789
-        , uuid = quotas.create('' + bytes);
-      unirest.get(URL + 'quota/' + uuid)
+    it('should increase the quota', function(done) {
+      var bytes = 123456789;
+      $quotaUuid = quotas.create('' + bytes);
+      unirest.post(URL + 'quota/' + $quotaUuid)
         .auth($nameDigest, $session)
         .end(function(response) {
           var result = response.body
             , usage = result.usage;
           assert.isTrue(usage.stored > 1000);
           assert.isTrue(usage.quota > $quota + bytes - TINY_STORAGE_CHARGE);
+          done();
+        });
+    });
+
+    it('should not increase the quota twice', function(done) {
+      unirest.post(URL + 'quota/' + $quotaUuid)
+        .auth($nameDigest, $session)
+        .end(function(response) {
+          var result = response.body;
+          assert.equal(result.error, errors.QUOTA_MISSING.message);
           done();
         });
     });

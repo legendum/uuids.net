@@ -28,7 +28,7 @@ var restify = require('restify')
     , login: ['POST', '/login', ['nameDigest', 'passwordDigest'], 'session']
     , changePassword: ['POST', '/password',  ['nameDigest', 'passwordDigest', 'newPasswordDigest'], 'session']
     , logout: ['POST', '/logout', BASIC_AUTH, 'ok']
-    , quota: ['GET', '/quota/:quotaUuid', BASIC_AUTH, 'usage']
+    , quota: ['POST', '/quota/:quotaUuid', BASIC_AUTH, 'usage']
     , usage: ['GET', '/usage', BASIC_AUTH, 'usage']
     , deleteAccount: ['POST', '/leave', ['nameDigest', 'passwordDigest'], 'ok']
     , createBucket: ['POST', '/bucket/:bucketName', BASIC_AUTH]
@@ -196,10 +196,11 @@ API.method('logout', function(params, next) {
 
 API.method('quota', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
-    var quotaToAdd, usage;
+    var quotaToAdd, usage, skipUuidCheck = true;
     if (err) return next(err);
-    quotaToAdd = parseInt(quotas.access(params.quotaUuid, true));
+    quotaToAdd = parseInt(quotas.access(params.quotaUuid, skipUuidCheck));
     if (!quotaToAdd) return next(errors.QUOTA_MISSING);
+    quotas.delete(params.quotaUuid); // so we can't use the quota twice
     account.usageObject.quota(account.usageObject.quota() + quotaToAdd);
     usage = account.usageObject.meta();
     next(null, usage);
