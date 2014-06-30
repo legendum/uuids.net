@@ -51,6 +51,15 @@ fieldset {
   background-color: #eed;
 }
 
+.selected-file-link {
+  border: 1px solid #ddd;
+  background-color: #eee;
+  border-radius: 5px;
+  box-shadow: 0px 2px 2px #999;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 .button {
   padding: 10px;
   border-radius: 5px;
@@ -63,6 +72,10 @@ a.button:hover {
 
 .hidden {
   display: none;
+}
+
+.hilite {
+  background-color: #ff9;
 }
 
 #surround {
@@ -85,10 +98,6 @@ a.button:hover {
 .content {
   padding-left: 9px;
   padding-right: 9px;
-}
-
-.content .hilite {
-  background-color: #ff9;
 }
 
 .content p {

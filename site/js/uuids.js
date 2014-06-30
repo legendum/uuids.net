@@ -297,12 +297,11 @@ function shareBucketFile() {
   $('#share-file-modal .selected-file-name').text(_selected.file);
   $('#share-file-modal .selected-file-link').html(_spinner);
   $('#share-file-modal').foundation('reveal', 'open');
-  $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share')
+  $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share/once')
   .done(function(response) {
     var uuid = response.bucket.share.uuid
-      , link = 'https://uuid.is/' + uuid
-      , html = '<a target="share" href="' + link + '">' + link + '</a>';
-    $('#share-file-modal .selected-file-link').html(html);
+      , link = 'https://uuid.is/' + uuid;
+    $('#share-file-modal .selected-file-link').html(link);
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
     alertMessage($('#actions'), response.error);
