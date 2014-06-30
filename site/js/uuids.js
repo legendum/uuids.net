@@ -117,6 +117,10 @@ function submitAccountForm($form, path, successMessage) {
     value = field.value.toLowerCase();
     if (field.name == 'name') params.nameDigest = Sha256.hash(value);
     if (field.name == 'password') params.passwordDigest = Sha256.hash(value);
+    if (field.name == 'newPassword' && value) {
+      path = '/password';
+      params.newPasswordDigest = Sha256.hash(value);
+    }
     if (field.name == 'invitation') params.invitation = value;
   }
   $.post(path, params)
@@ -361,6 +365,11 @@ exports.setup = function() {
   $('form#login-form').on('submit', function(e) {
     login($(e.target));
     return false;
+  });
+
+  // Handle logins
+  $('a#change-password').on('click', function(e) {
+    $('#new-password').show();
   });
 
   // Handle logouts
