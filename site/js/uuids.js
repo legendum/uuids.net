@@ -37,6 +37,7 @@ function formatSize(size) {
   if (size > 1000000000) return '' + (parseInt(size / 100000000) / 10) + ' GB';
   if (size > 1000000) return '' + (parseInt(size / 100000) / 10) + ' MB';
   if (size > 1000) return '' + (parseInt(size / 100) / 10) + ' KB';
+  return '' + size + ' bytes';
 }
 
 function getUsage() {
