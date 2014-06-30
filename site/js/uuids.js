@@ -369,7 +369,7 @@ exports.setup = function() {
 
   // Handle logins
   $('a#change-password').on('click', function(e) {
-    $('#new-password').show();
+    $('#new-password').toggle();
   });
 
   // Handle logouts
