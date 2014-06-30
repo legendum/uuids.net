@@ -83,7 +83,7 @@ function setupButtons() {
   }
 }
 
-function setupUploader() {
+function setupUploader(onComplete) {
   var path = '/bucket/' + encodeURIComponent(_selected.bucket) + '/upload';
   $('#uploaded').html('');
   $('#progress .meter').css('width', '0%');
@@ -99,6 +99,7 @@ function setupUploader() {
     progressall: function(e, response) {
       var progress = parseInt(response.loaded / response.total * 100, 10);
       $('#progress .meter').css('width', progress + '%');
+      if (progress == 100) setTimeout(onComplete, 2000);
     }
   });
 }
@@ -425,9 +426,12 @@ exports.setup = function() {
 
   // Handle file uploads
   $('a#upload-files-button').on('click', function(e) {
+    var reveal = $('#upload-files-modal');
     if (!$(e.target).hasClass('disabled')) {
-      setupUploader();
-      $('#upload-files-modal').foundation('reveal', 'open');
+      setupUploader(function() {
+        reveal.foundation('reveal', 'close');
+      });
+      reveal.foundation('reveal', 'open');
     }
   });
 
