@@ -82,6 +82,7 @@ Content.method('upload', function(req, res, next) {
       bucket[method](params.filename, function(err, file) {
         if (err) return next(err);
         my.processFile(file, uploaded, function(err, fileData, sizeDiff) {
+          var action;
           if (err) return next(err);
           res.send(HttpStatus.OK, {
             file: {
@@ -93,7 +94,8 @@ Content.method('upload', function(req, res, next) {
           });
           if (uploaded) account.usageObject.writeBytes(fileData.size);
           if (sizeDiff) account.usageObject.storeBytes(sizeDiff);
-          bucket.measureFileAction(file, filename, 'write', next);
+          action = {write: 1, size: fileData.size};
+          bucket.measureFileAction(file, fileData.name, action, next);
         });
       });
     });

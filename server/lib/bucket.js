@@ -69,7 +69,7 @@ Bucket.method('getFile', function(filename, next) {
   if (!uuid) return next(errors.FILE_MISSING);
   new File(uuid, function(err, file) {
     if (err) return next(err);
-    my.measureFileAction(file, filename, 'read', next);
+    my.measureFileAction(file, filename, {read: 1}, next);
   });
 });
 
@@ -80,23 +80,21 @@ Bucket.method('updateFileData', function(filename, data, next) {
     for (var key in data) {
       file.write(key, data[key]);
     }
-    my.measureFileAction(file, filename, 'write', next);
+    my.measureFileAction(file, filename, {write: 1}, next);
   });
 });
 
 Bucket.method('measureFileAction', function(file, filename, action, next) {
   var files = this.files() || {};
   if (!files[filename]) return next(errors.FILE_MISSING);
-  switch (action) {
-    case 'read':
-      files[filename].reads += 1;
-      break;
-    case 'write':
-      files[filename].writes += 1;
-      files[filename].updated = file.updated(utils.time());
-      break;
-    default:
-      return next(errors.BAD_PARAMETERS);
+  if (Number(action.read)) {
+    files[filename].reads += action.read;
+  } else if (Number(action.write)) {
+    files[filename].writes += action.write;
+    if (action.size) files[filename].size = action.size;
+    files[filename].updated = file.updated(utils.time());
+  } else {
+    return next(errors.BAD_PARAMETERS);
   } 
   this.files(files);
   next(null, file);

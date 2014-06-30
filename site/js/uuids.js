@@ -1,6 +1,7 @@
 (function(exports, global) {
 
 var _spinner = '<img class="spinner" src="../img/spinner.gif">'
+  , _sizes = {}
   , _session = null
   , _selected = {
       bucket: null
@@ -23,6 +24,7 @@ function showActions() {
   $('#actions .actions').addClass('hidden');
   if (_selected.file) {
     $('#file-name').text(_selected.file);
+    $('#file-size').text(formatSize(_sizes[_selected.file]));
     $('#file-actions').removeClass('hidden');
   } else if (_selected.bucket) {
     $('#bucket-name').text(_selected.bucket);
@@ -31,14 +33,19 @@ function showActions() {
   getUsage();
 }
 
+function formatSize(size) {
+  if (size > 1000000000) return '' + (parseInt(size / 100000000) / 10) + ' GB';
+  if (size > 1000000) return '' + (parseInt(size / 100000) / 10) + ' MB';
+  if (size > 1000) return '' + (parseInt(size / 100) / 10) + ' KB';
+}
+
 function getUsage() {
   $.get('/usage')
   .done(function(response) {
     var usage = response.usage
       , total = (usage.stored || 0) + (usage.input || 0) + (usage.output || 0)
-      , pct = parseInt(100 * total / usage.quota)
-      , mb = parseInt(usage.quota / 1048576);
-    $('.usage').text('' + pct + '% of ' + mb + 'MB quota used');
+      , pct = parseInt(100 * total / usage.quota);
+    $('.usage').text('' + pct + '% of ' + formatSize(usage.quota) + ' quota used');
   });
 }
 
@@ -152,7 +159,7 @@ function getBuckets() {
     for (i in buckets) {
       bucket = buckets[i];
       $li = $('<li/>').appendTo($ul);
-      $('<a href="JavaScript:void(0)">').text(bucket).appendTo($li);
+      $('<a href="#files">').text(bucket).appendTo($li);
     }
     $('#bucket-list a').click(function(e) {
       _selected.bucket = $(e.target).text();
@@ -177,13 +184,14 @@ function getBucketFiles() {
     var files = [], file, $li, i;
     $ul.html('');
     for (file in response.bucket.files) {
+      _sizes[file] = response.bucket.files[file].size;
       files.push(file);
     }
     files.sort();
     for (i in files) {
       file = files[i];
       $li = $('<li/>').appendTo($ul);
-      $('<a href="JavaScript:void(0)">').text(file).appendTo($li);
+      $('<a href="#actions">').text(file).appendTo($li);
     }
     $('#file-list a').click(function(e) {
       _selected.file = $(e.target).text();

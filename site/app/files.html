@@ -23,6 +23,7 @@
   <script type="text/javascript" src="../js/vendor/jquery.cookie.js"></script>
   <script type="text/javascript" src="../js/foundation.min.js"></script>
   <script type="text/javascript" src="../js/foundation/foundation.reveal.js"></script>
+  <script type="text/javascript" src="../js/foundation/foundation.tooltip.js"></script>
   <script type="text/javascript" src="../js/vendor/sha256.js"></script>
   <script type="text/javascript" src="../js/uuids.js"></script>
   <script type="text/javascript">
@@ -42,7 +43,7 @@
     <div id="page" class="row">
       <div id="buckets" class="medium-4 columns">
         <div class="row content">
-          <a href="JavaScript:void(0)" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-plus"></i> New bucket</a>
+          <a name="buckets" href="JavaScript:void(0)" id="create-bucket-button" data-reveal-id="create-bucket-modal" class="button"><i class="fi-plus"></i> New bucket</a>
           <div class="contained">
             <ul id="bucket-list" class="side-nav"></ul>
           </div>
@@ -50,7 +51,7 @@
       </div>
       <div id="files" class="medium-4 columns">
         <div class="row content">
-          <a href="JavaScript:void(0)" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
+          <a name="files" href="JavaScript:void(0)" id="upload-files-button" class="button disabled"><i class="fi-arrow-up"></i> Upload files</a>
           <div class="contained">
             <ul id="file-list" class="side-nav"></ul>
           </div>
@@ -59,6 +60,7 @@
       <div id="actions" class="medium-4 columns">
         <div class="spacer60px">
           <div class="alerter hidden">
+            <a name="actions"></a>
             <div data-alert class="alert-box"></div>
           </div>
         </div>
@@ -73,10 +75,11 @@
           </div>
           <div id="file-actions" class="actions panel callout hidden">
             <span id="file-name" class="label black round"></span>
+            <span id="file-size" class="label secondary round"></span>
             <ul class="no-bullet">
               <li><a href="JavaScript:void(0)" id="download-file-button" class="button"><i class="fi-arrow-down"></i> Download file</a></li>
-              <li><a href="JavaScript:void(0)" id="share-file-button" class="button"><i class="fi-unlock"></i> Share file link</a></li>
-              <li><a href="JavaScript:void(0)" id="unshare-file-button" class="button"><i class="fi-lock"></i> Unshare file</a></li>
+              <li><a href="JavaScript:void(0)" id="share-file-button" class="button"><i class="fi-link"></i> Share file link</a></li>
+              <li><a href="JavaScript:void(0)" id="unshare-file-button" class="button"><i class="fi-unlink"></i> Unshare file</a></li>
               <li><a href="JavaScript:void(0)" id="rename-file-button" class="button"><i class="fi-pencil"></i> Rename file</a></li>
               <li><a href="JavaScript:void(0)" id="delete-file-button" class="button"><i class="fi-x"></i> Delete file</a></li>
               <li><a href="JavaScript:void(0)" id="move-file-button" class="button"><i class="fi-arrow-right"></i> Move file</a></li>
