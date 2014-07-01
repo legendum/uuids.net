@@ -1,6 +1,7 @@
 (function(exports, global) {
 
 var _spinner = '<img class="spinner" src="../img/spinner.gif">'
+  , _site = 'https://uuid.is/' // + 'shared/file/' for other sites
   , _sizes = {}
   , _session = null
   , _selected = {
@@ -300,7 +301,7 @@ function shareBucketFile() {
   $.post('/bucket/' + encodeURIComponent(_selected.bucket) + '/file/' + encodeURIComponent(_selected.file) + '/share/once')
   .done(function(response) {
     var uuid = response.bucket.share.uuid
-      , link = 'https://uuid.is/' + uuid;
+      , link = _site + uuid;
     $('#share-file-modal .selected-file-link').html(link);
   }).fail(function(jqXHR) {
     var response = JSON.parse(jqXHR.responseText);
