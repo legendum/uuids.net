@@ -34,7 +34,8 @@ var path = require('path')
   , $session
   , $shareBucketUuid
   , $shareFileUuid
-  , $pdfPath = path.join(env.UUIDS_STORE_PATH, '../test/fixtures/101-tips.pdf');
+  , $pdfPath = path.join(env.UUIDS_STORE_PATH, '../test/fixtures/101-tips.pdf')
+  , $uuidsCmd = path.join(__dirname, '../../bin/uuids');
 
 describe('server', function() {
 
@@ -430,9 +431,9 @@ describe('server', function() {
     });
   });
 
-  describe('POST /bucket/bucket2/file/file2/share', function() {
-    it('should share a file', function(done) {
-      unirest.post(URL + 'bucket/bucket2/file/file2/share')
+  describe('POST /bucket/bucket2/file/file2/share/once', function() {
+    it('should share a file once', function(done) {
+      unirest.post(URL + 'bucket/bucket2/file/file2/share/once')
         .auth($nameDigest, $session)
         .end(function(response) {
           var result = response.body;
@@ -440,7 +441,7 @@ describe('server', function() {
           assert.equal(result.bucket.name, 'bucket2');
           assert.equal(result.bucket.share.type, 'file');
           assert.equal(result.bucket.share.name, 'file2');
-          assert.isFalse(result.bucket.share.once);
+          assert.isTrue(result.bucket.share.once);
           assert.isTrue(utils.isUuid(result.bucket.share.uuid));
           $shareFileUuid = result.bucket.share.uuid;
           done();
@@ -457,14 +458,27 @@ describe('server', function() {
           done();
         });
     })
+
+    it('should toggle a share to get a shared file again', function(done) {
+      asyncblock(function(flow) {
+        exec([$uuidsCmd, 'toggle', $shareFileUuid].join(' '), flow.add());
+        result = flow.wait();
+        assert.match(result, /share was toggled/);
+        unirest.get(URL + 'shared/file/' + $shareFileUuid)
+          .end(function(response) {
+            var result = response.body;
+            assert.isTrue(result.length > 100);
+            done();
+          });
+      });
+    });
   });
 
   describe('suspend and activate an account', function() {
-    var uuidsCmd = path.join(__dirname, '../../bin/uuids')
-      , result;
+    var result;
     it('should suspend an account', function(done) {
       asyncblock(function(flow) {
-        exec([uuidsCmd, 'suspend', $shareFileUuid].join(' '), flow.add());
+        exec([$uuidsCmd, 'suspend', $shareFileUuid].join(' '), flow.add());
         result = flow.wait();
         assert.match(result, /is now suspended/);
         unirest.get(URL + 'shared/file/' + $shareFileUuid)
@@ -479,12 +493,13 @@ describe('server', function() {
 
     it('should activate an account', function(done) {
       asyncblock(function(flow) {
-        exec([uuidsCmd, 'activate', $shareFileUuid].join(' '), flow.add());
+        exec([$uuidsCmd, 'activate', $shareFileUuid].join(' '), flow.add());
         result = flow.wait();
         unirest.get(URL + 'shared/file/' + $shareFileUuid)
           .end(function(response) {
             var result = response.body;
             assert.isTrue(result.length > 100);
+            shares.toggle($shareFileUuid); // so we can perform more tests below
             done();
           });
       });

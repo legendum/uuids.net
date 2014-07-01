@@ -9,6 +9,7 @@ var USAGE = [
   'restore:  Restore a file from the archive (use <file> arg)',
   'suspend:  Suspend a share\'s account (use <share> arg)',
   'activate: Activate a share\'s account (use <share> arg)',
+  'toggle:   Disable/enable a shared link (use <share> arg)',
   'invite:   Create an invitation code for a new account',
   'keygen:   Generate a public/private keypair for UUIDs',
   'quota:    Create a new quota for an account to claim',
@@ -74,7 +75,11 @@ var UUIDS = (function(cmd) {
   }
 
   function setUsageState(uuidSharedPart, state) {
-    var share = shares.access(uuidSharedPart)
+    var share = shares.access(uuidSharedPart);
+    if (!share) {
+      shares.toggle(uuidSharedPart);
+      share = shares.access(uuidSharedPart);
+    }
     if (!share) return false;
     new File(share.uuid, function(err, file) {
       if (err && !err.message.match(/suspended/)) utils.quit(err);
@@ -94,6 +99,18 @@ var UUIDS = (function(cmd) {
     if (!setUsageState(argv._[1], 'active')) {
       utils.quit("usage: uuids activate <share>");
     }
+  }
+
+  function toggle() {
+    var share, uuidSharedPart = argv._[1];
+    share = shares.access(uuidSharedPart);
+    shares.toggle(uuidSharedPart);
+    if (!share) share = shares.access(uuidSharedPart);
+    if (!share) return utils.quit("share %s not found", uuidSharedPart);
+    new File(share.uuid, function(err, file) {
+      if (err) return utils.quit("share was toggled, but file not found");
+      utils.quit("share was toggled linking to file %s", file.name());
+    });
   }
 
   function invite() {
@@ -129,6 +146,7 @@ var UUIDS = (function(cmd) {
   , restore: restoreFile
   , suspend: suspendAccount
   , activate: activateAccount
+  , toggle: toggle
   , invite: invite
   , keygen: keygen
   , quota: quota

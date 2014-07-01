@@ -14,7 +14,8 @@
 
 var Store = require('./store')
   , utils = require('./utils')
-  , s4 = require('./s4');
+  , s4 = require('./s4')
+  , _cache = {};
 
 function Splitter(storeName, paddingBits) {
   this.storeName = storeName;
@@ -33,15 +34,19 @@ Splitter.method('create', function(secret) {
 
   this.store.writeWrapped(sharedPart, storedPart);
   this.store.writeWrapped(uuidOfPart, sharedPart);
+  _cache[uuidOfPart] = secret;
   return uuidOfPart;
 });
 
 Splitter.method('access', function(uuidOfPart) {
-  var sharedPart = this.store.readWrapped(uuidOfPart)
-    , storedPart = this.store.readWrapped(sharedPart);
+  var sharedPart, storedPart, secret;
+  if (_cache[uuidOfPart]) return _cache[uuidOfPart];
+  sharedPart = this.store.readWrapped(uuidOfPart)
+  storedPart = this.store.readWrapped(sharedPart)
   if (!storedPart) return null;
   try {
-    return JSON.parse( s4.hex2str(s4.combine( [storedPart, sharedPart] )) );
+    secret = JSON.parse( s4.hex2str(s4.combine( [storedPart, sharedPart] )) );
+    return _cache[uuidOfPart] = secret;
   } catch (e) {
     return null;
   }
@@ -49,17 +54,22 @@ Splitter.method('access', function(uuidOfPart) {
 
 Splitter.method('toggle', function(uuidOfPart) {
   var sharedPart = this.store.readWrapped(uuidOfPart)
-    , storedPart = this.store.readWrapped(sharedPart);
+    , storedPart = this.store.readWrapped(sharedPart)
+    , reversedStr;
   if (!storedPart) return null;
-  this.store.writeWrapped(sharedPart, utils.reverse(storedPart));
+  reversedStr = utils.reverse(storedPart);
+  this.store.writeWrapped(sharedPart, reversedStr);
+  delete _cache[uuidOfPart]; // coz we don't know which way it's toggled
 });
 
 Splitter.method('delete', function(uuidOfPart) {
   var sharedPart = this.store.readWrapped(uuidOfPart);
   this.store.deleteWrapped(sharedPart);
   this.store.deleteWrapped(uuidOfPart);
+  delete _cache[uuidOfPart];
 });
 
 Splitter.method('destroy', function() {
   this.store.destroy();
+  _cache = {};
 });
