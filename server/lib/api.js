@@ -479,7 +479,7 @@ API.method('getSharedBucket', function(params, next) {
     , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
-  if (!bucketUuid) return next(errors.BUCKET_MISSING);
+  if (!bucketUuid) return next(errors.ACCESS_DENIED);
   new Bucket(bucketUuid, function(err, bucket) {
     if (err) return next(err);
     callback = fnReturnDetails(next, {
@@ -495,7 +495,7 @@ API.method('getSharedBucketFile', function(params, next) {
     , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
-  if (!bucketUuid) return next(errors.BUCKET_MISSING);
+  if (!bucketUuid) return next(errors.ACCESS_DENIED);
   new Bucket(bucketUuid, function(err, bucket) {
     if (err) return next(err);
     next(null, function(req, res, next2) {
@@ -512,7 +512,7 @@ API.method('getSharedBucketFileKey', function(params, next) {
     , bucketUuid = share ? share.uuid : null
     , bucket
     , callback;
-  if (!bucketUuid) return next(errors.BUCKET_MISSING);
+  if (!bucketUuid) return next(errors.ACCESS_DENIED);
   new Bucket(bucketUuid, function(err, bucket) {
     if (err) return next(err);
     bucket.getFile(params.filename, function(err, file) {
@@ -532,7 +532,7 @@ API.method('getSharedFile', function(params, next) {
   var share = shares.access(params.uuidSharedPart)
     , uuid = share ? share.uuid : null
     , callback;
-  if (!uuid) return next(errors.FILE_MISSING);
+  if (!uuid) return next(errors.ACCESS_DENIED);
   if (share.once) shares.toggle(params.uuidSharedPart);
   new File(uuid, function(err, file) {
     if (err) return next(err);
@@ -546,7 +546,7 @@ API.method('getSharedFileKey', function(params, next) {
   var share = shares.access(params.uuidSharedPart)
     , uuid = share ? share.uuid : null
     , callback;
-  if (!uuid) return next(errors.FILE_MISSING);
+  if (!uuid) return next(errors.ACCESS_DENIED);
   new File(uuid, function(err, file) {
     if (err) return next(err);
     var callback, data = {};

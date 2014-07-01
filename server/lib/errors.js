@@ -7,7 +7,8 @@
 var util = require('util') // that's the *node* utility library, not ours
   , HttpStatus = require('http-status-codes')
   , ERRORS = {
-      ACCOUNT_EXISTS: ["Account already exists", HttpStatus.FORBIDDEN]
+      ACCESS_DENIED: ["Access denied", HttpStatus.FORBIDDEN]
+    , ACCOUNT_EXISTS: ["Account already exists", HttpStatus.FORBIDDEN]
     , ACCOUNT_MISMATCH: ["Account does not exist or password is incorrect", HttpStatus.FORBIDDEN]
     , ACCOUNT_STATE: ["Account state is '%s'", HttpStatus.FORBIDDEN]
     , BAD_PARAMETERS: ["Oops, bad parameters", HttpStatus.BAD_REQUEST]

@@ -205,7 +205,7 @@ describe('api', function() {
 
     it('should not get an unshared file key', function(done) {
       api.getSharedFileKey({uuidSharedPart: $uuidSharedPart, key: 'a'}, function(err, result) {
-        assert.equal(err.message, errors.FILE_MISSING.message);
+        assert.equal(err.message, errors.ACCESS_DENIED.message);
         done();
       });
     });
