@@ -63,7 +63,6 @@ fieldset {
 .button {
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #fff;
 }
 
 a.button:hover {
@@ -120,10 +119,14 @@ a.button:hover {
   margin-top: 36px;
 }
 
-#header #buttons {
+#header .buttons {
   position: absolute;
   top: 20px;
   right: 30px;
+}
+
+#header .buttons .button {
+  border: 1px solid #fff;
 }
 
 #page {
