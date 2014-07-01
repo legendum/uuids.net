@@ -133,7 +133,8 @@ API.method('createResponse', function(action, auth, jsonRoot) {
         // Error, so send it as JSON
         if (err) return sendError(res, err, next);
 
-        // Data is a function so call it with the response object
+        // If "data" is a function we call it with the response object.
+        // This is a way to provide extra capabilities to some methods.
         if (typeof data === 'function') {
           return data(req, res, function(err) {
             if (err) return sendError(res, err, next);
