@@ -217,8 +217,9 @@ describe('api', function() {
       $newBucketName = 'bucket1';
       api.moveBucketFile({nameDigest: $nameDigest, sessionPartKey: $partKey, bucketName: $bucketName, filename: $filename, newBucketName: $newBucketName}, function(err, result) {
         assert.isNull(err);
-        assert.isNumber(result.files[$filename].created);
-        assert.isNumber(result.files[$filename].updated);
+        assert.equal(result.bucket.name, $newBucketName);
+        assert.isNumber(result.bucket.files[$filename].created);
+        assert.isNumber(result.bucket.files[$filename].updated);
         done();
       });
     });

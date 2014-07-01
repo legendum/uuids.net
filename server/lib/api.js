@@ -371,7 +371,12 @@ API.method('moveBucketFile', function(params, next) {
         newBucket.files(newFiles);
         delete(files[filename]);
         bucket.files(files);
-        newBucket.details(next);
+        newBucket.details(function(err, details) {
+          if (err) return next(err);
+          details.bucket = params.newBucketName;
+          var callback = fnReturnDetails(next, details);
+          callback(null, newBucket);
+        });
       });
     });
   });

@@ -299,6 +299,29 @@ https://uuids.net/bucket/MyBestBucket/file/MyNewFile/rename/MyBestFile
      uuidDigest: 'b00540a8d19af6b77c51cfafd3c1460b165c0578' } 
 ```
 
+### POST /bucket/{bucketName}/file/{filename}/move/{newBucketName}
+
+Move a file to another bucket (that already exists).
+
+Use basic auth to send ```nameDigest``` (username) and ```session``` (password).
+
+#### Example request
+```
+curl --user $nameDigest:$session -X POST \
+https://uuids.net/bucket/MyBestBucket/file/MyBestFile/move/MyOtherBucket
+```
+
+#### Example response
+```
+{ bucket: 
+   { name: 'MyOtherBucket',
+     uuidDigest: 'dd6cb63286169317a8b58d1546240078a476c66d',
+     files: {
+        MyBestFile: {size: 0, reads: 0, writes: 0, created: 1402630192022, updated: 1402630192022},
+     shares: {},
+     created: 14026301794980} }
+```
+
 ### POST /bucket/{bucketName}/file/{filename}/delete
 
 Delete a file.
