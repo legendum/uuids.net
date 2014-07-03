@@ -47,14 +47,14 @@ describe('utils', function() {
       var data = 'roses are red, violets are blue'
         , key = "gherkins";
 
-      assert.equal(utils.encrypt(data, key), 'xBTHg//mPdOJsJ8voIxWMswlw3l5mIqkkEnQHrAKeiM=');
+      assert.equal(utils.encrypt(data, key), 'OwhqneG/Cu2VfDkvRzgy/Ab85tPhRGz9h20NaT7EE5s=');
       assert.equal(data, utils.decrypt(utils.encrypt(data, key), key));
     });
 
     it('should wrap and unwrap structured data', function() {
       var data = {roses: 'red', violets: 'blue'}
         , key = "gherkins";
-      assert.equal(utils.wrap(data, key), '9p/4cm1gTdG2IvRifAg7/WmJxnHYichPq2rOSk0y0sBlJKq/oQt+lVdqe/ZHuSY8');
+      assert.equal(utils.wrap(data, key), 'fYi76o2S30iDUUtKhopNmNvJC4JYJudQyuAphv7GU4t12X0aJtI1Dr3aRn0ATMRp');
       assert.deepEqual(data, utils.unwrap(utils.wrap(data, key), key));
     });
   });

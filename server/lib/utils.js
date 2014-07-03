@@ -29,7 +29,7 @@ Utils.method('quit', function() {
 });
 
 Utils.method('digest', function(data, sha, out) {
-  sha = sha || 'sha1';
+  sha = sha || 'sha256';
   out = out || 'hex'; if (out == 'none') out = null;
   var shasum = crypto.createHash(sha);
   shasum.update(data + RAINBOW_TABLE_PROTECTION, 'utf8');
@@ -77,7 +77,7 @@ Utils.method('scryptMatch', function(data, hash, next) {
 
 Utils.method('encrypt', function(data, key) {
   var cryptKey = this.digestKey(key)
-    , iv = this.digest(key, 'sha1').substr(23, 16) // just coz
+    , iv = this.digest(key, 'sha256').substr(23, 16) // just coz
     , encipher = crypto.createCipheriv('aes-256-cbc', cryptKey, iv)
     , encryptData = encipher.update(data, 'utf8', 'binary');
 
@@ -90,7 +90,7 @@ Utils.method('decrypt', function(data, key) {
   encryptData = new Buffer(data, 'base64').toString('binary');
 
   var cryptKey = this.digestKey(key)
-    , iv = this.digest(key, 'sha1').substr(23, 16) // just coz
+    , iv = this.digest(key, 'sha256').substr(23, 16) // just coz
     , decipher = crypto.createDecipheriv('aes-256-cbc', cryptKey, iv)
     , decoded = decipher.update(encryptData, 'binary', 'utf8');
 
@@ -161,7 +161,7 @@ Utils.method('uuid', function() {
 });
 
 Utils.method('isDigest', function(digest) {
-  var match = digest.match(/^\w{40}$/);
+  var match = digest.match(/^\w{64}$/);
   return (match && match.index === 0 ? true : false);
 });
 
