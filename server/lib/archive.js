@@ -33,9 +33,8 @@ function aws(archive, method, filepath, next) {
     , filename = path.basename(filepath)
     , params = {Bucket: bucket, Key: filename};
 
-  if (method == 'putObject') params.Body = fs.createReadStream(filepath);
-
   if (archive.active()) {
+    if (method == 'putObject') params.Body = fs.createReadStream(filepath);
     utils.lock(filepath);
     archive.S3[method](params, function (err) {
       if (err) return next(err);
@@ -120,7 +119,8 @@ Archive.method('restored', function(filename, time) {
 });
 
 Archive.method('active', function(filepath, next) {
-  return env.UUIDS_ENV == 'production' && env.AWS_PROFILE;
+  var active = env.AWS_PROFILE ? true : false;
+  return next ? next(active) : active;
 });
 
 Archive.method('destroy', function() {

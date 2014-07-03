@@ -152,6 +152,7 @@ var UUIDS = (function(cmd) {
   }
 
   function test() {
+    env.AWS_PROFILE = ''; // don't use S3 while running tests
     console.log("testing clients...");
     system('mocha ' + path.join(__dirname, '/../test/client/*'), function() {
       console.log("testing server...");
