@@ -42,8 +42,9 @@ Splitter.method('create', function(secret) {
     , shares = s4.share(secretHex, 2, 2, this.paddingBits)
     , storedPart = shares[0]
     , sharedPart = shares[1]
-    , uuidOfPart = utils.uuid();
+    , uuidOfPart;
 
+  do { uuidOfPart = utils.uuid() } while (this.access(uuidOfPart));
   this.store.writeWrapped(sharedPart, storedPart);
   this.store.writeWrapped(uuidOfPart, sharedPart);
   setCache(uuidOfPart, secret);
@@ -54,6 +55,7 @@ Splitter.method('access', function(uuidOfPart) {
   var sharedPart, storedPart, secret, cached = getCache(uuidOfPart);
   if (cached) return cached;
   sharedPart = this.store.readWrapped(uuidOfPart)
+  if (!sharedPart) return null;
   storedPart = this.store.readWrapped(sharedPart)
   if (!storedPart) return null;
   try {
