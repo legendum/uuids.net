@@ -40,9 +40,9 @@ Bucket.method('details', function(next) {
 });
 
 Bucket.method('createFile', function(filename, next) {
-  var my = this
-    , uuid = this.objectUuid(filename)
-  if (uuid) return next(errors.FILE_EXISTS);
+  var my = this;
+  if (utils.blank(filename)) return next(errors.FILE_MISSING);
+  if (this.objectUuid(filename)) return next(errors.FILE_EXISTS);
   new File(null, function(err, file) {
     var files
       , now;

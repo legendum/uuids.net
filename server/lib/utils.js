@@ -28,6 +28,10 @@ Utils.method('quit', function() {
   process.exit();
 });
 
+Utils.method('blank', function(name) {
+  return !(typeof name === 'string' && name.length > 0);
+});
+
 Utils.method('digest', function(data, sha, out) {
   sha = sha || 'sha256';
   out = out || 'hex'; if (out == 'none') out = null;

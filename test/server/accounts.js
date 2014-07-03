@@ -23,6 +23,20 @@ describe('accounts', function() {
         done();
       });
     });
+
+    it('should not create an account without a nameDigest', function(done) {
+      accounts.create('', utils.digest($password), function(err, uuid) {
+        assert.equal(err.message, "Required parameter 'nameDigest' missing");
+        done();
+      });
+    });
+
+    it('should not create an account without a passwordDigest', function(done) {
+      accounts.create(utils.digest($name), '', function(err, uuid) {
+        assert.equal(err.message, "Required parameter 'passwordDigest' missing");
+        done();
+      });
+    });
   });
 
   describe('access', function() {
@@ -81,6 +95,14 @@ describe('accounts', function() {
     it('should not create a duplicate bucket in an account', function(done) {
       $account.createBucket('test', function(err, bucket) {
         assert.equal(err.message, errors.BUCKET_EXISTS.message);
+        assert.notOk(bucket);
+        done();
+      });
+    });
+
+    it('should not create a bucket with a blank name', function(done) {
+      $account.createBucket('', function(err, bucket) {
+        assert.equal(err.message, errors.BUCKET_MISSING.message);
         assert.notOk(bucket);
         done();
       });

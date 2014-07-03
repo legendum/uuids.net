@@ -24,6 +24,30 @@ describe('utils', function() {
     });
   });
 
+  describe('blank', function() {
+    it('should find undefined to be blank', function() {
+      assert.isTrue(utils.blank(undefined));
+    });
+    it('should find null to be blank', function() {
+      assert.isTrue(utils.blank(null));
+    });
+    it('should find true to be blank (not a string)', function() {
+      assert.isTrue(utils.blank(true));
+    });
+    it('should find false to be blank (not a string)', function() {
+      assert.isTrue(utils.blank(false));
+    });
+    it('should find 123 to be blank (not a string)', function() {
+      assert.isTrue(utils.blank(123));
+    });
+    it('should find "" to be blank (empty string)', function() {
+      assert.isTrue(utils.blank(''));
+    });
+    it('should find "kevin" not to be blank', function() {
+      assert.isFalse(utils.blank('kevin'));
+    });
+  });
+
   describe('exists', function() {
     it('should check this file exists', function() {
       assert.isTrue(utils.exists(__filename));

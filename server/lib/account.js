@@ -37,6 +37,7 @@ module.exports = Account;
 
 Account.method('createBucket', function(bucketName, next) {
   var my = this;
+  if (utils.blank(bucketName)) return next(errors.BUCKET_MISSING);
   if (this.objectUuid(bucketName)) return next(errors.BUCKET_EXISTS);
   new Bucket(utils.uuid(), function(err, bucket) {
     var buckets

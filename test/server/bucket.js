@@ -3,6 +3,7 @@
 var assert = require('chai').assert
   , env = require('../../server/lib/env')('test')
   , utils = require('../../server/lib/utils')
+  , errors = require('../../server/lib/errors')
   , Usage = require('../../server/lib/usage')
   , Bucket = require('../../server/lib/bucket')
   , shares = require('../../server/lib/shares');
@@ -28,6 +29,13 @@ describe('Bucket', function() {
           assert.equal(file.usage(), $bucket.usage());
           done();
         });
+      });
+    });
+
+    it('should not create an unnamed file in a bucket', function(done) {
+      $bucket.createFile('', function(err, file) {
+        assert.equal(err.message, errors.FILE_MISSING.message);
+        done();
       });
     });
   });

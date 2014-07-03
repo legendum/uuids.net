@@ -14,6 +14,12 @@ function Accounts() {}
 module.exports = new Accounts();
 
 Accounts.method('create', function(nameDigest, passwordDigest, next) {
+  if (utils.blank(nameDigest)) {
+    return next(errors.create('PARAM_MISSING', 'nameDigest'));
+  }
+  if (utils.blank(passwordDigest)) {
+    return next(errors.create('PARAM_MISSING', 'passwordDigest'));
+  }
   secrets.create(nameDigest, passwordDigest, function(err, secretKey) {
     if (err) return next(err);
     new Account(secretKey, function(err, account) {

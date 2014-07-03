@@ -25,6 +25,7 @@ var util = require('util') // that's the *node* utility library, not ours
     , KEY_TOO_LONG: ["Data tag length is too long", HttpStatus.REQUEST_TOO_LONG]
     , KEY_WRONG_TYPE: ["Data tag is the wrong type", HttpStatus.INTERNAL_SERVER_ERROR]
     , LOCKED_FILE_AT: ["Locked file at '%s'", HttpStatus.LOCKED]
+    , PARAM_MISSING: ["Required parameter '%s' missing", HttpStatus.BAD_REQUEST]
     , QUOTA_EXCEEDED: ["Account quota exceeded", HttpStatus.INSUFFICIENT_STORAGE]
     , QUOTA_MISSING: ["Quota does not exist", HttpStatus.NOT_FOUND]
     , SESSION_EXPIRED: ["Session has expired", HttpStatus.FORBIDDEN]
