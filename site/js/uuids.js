@@ -237,9 +237,11 @@ function getBucketFiles() {
 }
 
 function createBucket($form) {
-  var bucket = $('input[name="name"]', $form).val();
+  var $field = $('input[name="name"]', $form)
+    , bucket = $field.val();
   $.post('/bucket/' + encodeURIComponent(bucket))
   .done(function(response) {
+    $field.val('');
     getBuckets();
     alertMessage($form, 'Bucket created', 'success');
     $('a.close-reveal-modal', $form.parent()).trigger('click');
