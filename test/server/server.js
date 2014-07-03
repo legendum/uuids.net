@@ -592,7 +592,9 @@ describe('server', function() {
           done();
         });
     });
+  });
 
+  describe('POST /quota', function() {
     it('should increase the quota', function(done) {
       var bytes = 123456789;
       $quotaUuid = quotas.create(bytes);
@@ -661,6 +663,17 @@ describe('server', function() {
         .end(function(response) {
           var result = response.body;
           assert.isTrue(result.ok);
+          done();
+        });
+    });
+
+    it('should not login to a destroyed user account', function(done) {
+      unirest.post(URL + 'login')
+        .field('nameDigest', $nameDigest)
+        .field('passwordDigest', $passwordDigest)
+        .end(function(response) {
+          var result = response.body;
+          assert(result.error == errors.ACCOUNT_MISMATCH.message);
           done();
         });
     });
