@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
 var USAGE = [
-  'usage: uuids <cmd> --port=80',
+  'usage: uuids <cmd>',
   '',
   '...where <cmd> is a command from:',
   'start:    Start the UUIDs server on the specified port',
-  'archive:  Save a file to the archive (requires <file> arg)',
-  'restore:  Restore a file from the archive (use <file> arg)',
+  'backup:   Save a file to the S3 archive (requires <file> arg)',
+  'archive:  Save a file and delete it locally (use <file> arg)',
+  'restore:  Restore a file from the S3 archive (use <file> arg)',
   'suspend:  Suspend a share\'s account (use <share> arg)',
   'activate: Activate a share\'s account (use <share> arg)',
   'toggle:   Disable/enable a shared link (use <share> arg)',
@@ -36,27 +37,44 @@ var UUIDS = (function(cmd) {
     utils.quit(USAGE);
   }
 
-  function system(cmd) {
+  function system(cmd, next) {
     asyncblock(function(flow){
       var result;
       exec(cmd, flow.add());
       result = flow.wait();
       console.log(result); 
+      if (next) next();
     });
   }
 
-  function archiveFile() {
+  function saveFile(action, options) {
     var filename = argv._[1]
       , filepath = (filename ? path.join(process.cwd(), filename) : null);
-    if (!archive.active()) utils.quit("sorry, archive is not active");
+    options = options || {};
+    if (!archive.active()) utils.quit("archive is not active: set AWS_PROFILE");
     if (filename && utils.exists(filepath)) {
       archive.save(filepath, function(err) {
         if (err) utils.quit(err);
-        utils.unlink(filepath);
-        utils.quit("archived %s", filepath);
+        if (options.unlink) utils.unlink(filepath);
+        utils.quit("%s %s", action, filepath);
       });
+      return true;
     } else {
+      return false;
+    }
+  }
+
+  // Archive is used for large blobs, to save disk space on the server
+  function archiveFile() {
+    if (!saveFile('archived', {unlink: true})) {
       utils.quit("usage: uuids archive <file>");
+    }
+  }
+
+  // Backup is used for system files such as secrets.db and sessions.db
+  function backupFile() {
+    if (!saveFile('backed up', {unlink: false})) {
+      utils.quit("usage: uuids backup <file>");
     }
   }
 
@@ -119,8 +137,9 @@ var UUIDS = (function(cmd) {
 
   function keygen() {
     process.chdir(path.join(__dirname, '../keys'));
-    system('openssl genrsa -out uuids.pem 2048 && openssl rsa -in uuids.pem -pubout > uuids.pub');
-    utils.quit("keys generated");
+    system('openssl genrsa -out uuids.pem 2048 && openssl rsa -in uuids.pem -pubout > uuids.pub', function() {
+      utils.quit("keys generated");
+    });
   }
 
   function quota() {
@@ -133,7 +152,11 @@ var UUIDS = (function(cmd) {
   }
 
   function test() {
-    system('mocha ' + path.join(__dirname, '/../test/server'));
+    console.log("testing clients...");
+    system('mocha ' + path.join(__dirname, '/../test/client/*'), function() {
+      console.log("testing server...");
+      system('mocha ' + path.join(__dirname, '/../test/server'));
+    });
   }
 
   function start() {
@@ -142,6 +165,7 @@ var UUIDS = (function(cmd) {
 
   var commands = {
     help: usage
+  , backup: backupFile
   , archive: archiveFile
   , restore: restoreFile
   , suspend: suspendAccount
