@@ -158,7 +158,12 @@ Bucket.method('shareFile', function(filename, options, next) {
   options = options || {};
   this.getFile(filename, function(err, file) {
     if (err) return next(err);
-    var sharePartUuid = shares.create({uuid: file.uuid, once: !!options.once})
+    var sharePartUuid = shares.create({
+          uuid: file.uuid
+        , once: !!options.once
+        , embargo: parseInt(options.embargo)
+        , expires: parseInt(options.expires)
+        })
       , shared = my.shares() || {};
     shared[sharePartUuid] = {type: 'file', name: filename, created: utils.time()};
     my.shares(shared);

@@ -418,7 +418,11 @@ API.method('shareBucketFile', function(params, next) {
   accounts.access(params.nameDigest, params.sessionPartKey, function(err, account) {
     if (err) return next(err);
     account.getBucket(params.bucketName, function(err, bucket) {
-      var options = {once: !!params.once};
+      var options = {
+        once: !!params.once
+      , embargo: params.embargo
+      , expires: params.expires
+      };
       if (err) return next(err);
       bucket.shareFile(params.filename, options, function(err, uuidSharedPart) {
         var callback, share = {
@@ -426,6 +430,8 @@ API.method('shareBucketFile', function(params, next) {
         , name: params.filename
         , uuid: uuidSharedPart
         , once: options.once
+        , embargo: options.embargo
+        , expires: options.expires
         };
         if (err) return next(err);
         callback = fnReturnDetails(next, {
@@ -536,9 +542,12 @@ API.method('getSharedBucketFileKey', function(params, next) {
 API.method('getSharedFile', function(params, next) {
   var share = shares.access(params.uuidSharedPart)
     , uuid = share ? share.uuid : null
+    , now = utils.time()
     , callback;
   if (!uuid) return next(errors.ACCESS_DENIED);
   if (share.once) shares.toggle(params.uuidSharedPart);
+  if (share.embargo && share.embargo < now) return next(errors.SHARE_EMBARGO);
+  if (share.expires && share.expires > now) return next(errors.SHARE_EXPIRED);
   new File(uuid, function(err, file) {
     if (err) return next(err);
     next(null, function(req, res, next) {
