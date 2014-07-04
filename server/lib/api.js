@@ -542,12 +542,12 @@ API.method('getSharedBucketFileKey', function(params, next) {
 API.method('getSharedFile', function(params, next) {
   var share = shares.access(params.uuidSharedPart)
     , uuid = share ? share.uuid : null
-    , now = utils.time()
+    , secs = parseInt(utils.time() / 1000)
     , callback;
   if (!uuid) return next(errors.ACCESS_DENIED);
   if (share.once) shares.toggle(params.uuidSharedPart);
-  if (share.embargo && share.embargo > now) return next(errors.SHARE_EMBARGO);
-  if (share.expires && share.expires < now) return next(errors.SHARE_EXPIRED);
+  if (share.embargo && share.embargo > secs) return next(errors.SHARE_EMBARGO);
+  if (share.expires && share.expires < secs) return next(errors.SHARE_EXPIRED);
   new File(uuid, function(err, file) {
     if (err) return next(err);
     next(null, function(req, res, next) {

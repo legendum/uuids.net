@@ -33,6 +33,7 @@ Server.method('setupRoutes', function(restServer) {
 Server.method('createRestServer', function() {
   var restServer = restify.createServer({name: 'UUIDs'});
   restServer.use(restify.authorizationParser());
+  restServer.use(restify.queryParser());
   restServer.use(restify.bodyParser({
     keepExtensions: true
   , uploadDir: os.tmpdir()

@@ -432,7 +432,7 @@ describe('server', function() {
   });
 
   describe('POST /bucket/bucket2/file/file2/share/once', function() {
-    it('should share a file once', function(done) {
+    it('should share a file once (yet again)', function(done) {
       unirest.post(URL + 'bucket/bucket2/file/file2/share/once')
         .auth($nameDigest, $session)
         .end(function(response) {
@@ -471,6 +471,48 @@ describe('server', function() {
             done();
           });
       });
+    });
+  });
+
+  describe('embargoes and expiries', function() {
+    it('should share a file with an embargo', function(done) {
+      unirest.post(URL + 'bucket/bucket2/file/file2/share?embargo=9999999999')
+        .auth($nameDigest, $session)
+        .end(function(response) {
+          var result = response.body;
+          assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+          assert.equal(result.bucket.name, 'bucket2');
+          assert.equal(result.bucket.share.type, 'file');
+          assert.equal(result.bucket.share.name, 'file2');
+          assert.isFalse(result.bucket.share.once);
+          assert.isTrue(utils.isUuid(result.bucket.share.uuid));
+          unirest.get(URL + 'shared/file/' + result.bucket.share.uuid)
+            .end(function(response) {
+              var result = response.body;
+              assert.equal(result.error, errors.SHARE_EMBARGO.message);
+              done();
+            });
+        });
+    });
+
+    it('should share a file that expires', function(done) {
+      unirest.post(URL + 'bucket/bucket2/file/file2/share?expires=1000000000')
+        .auth($nameDigest, $session)
+        .end(function(response) {
+          var result = response.body;
+          assert.isTrue(utils.isDigest(result.bucket.uuidDigest));
+          assert.equal(result.bucket.name, 'bucket2');
+          assert.equal(result.bucket.share.type, 'file');
+          assert.equal(result.bucket.share.name, 'file2');
+          assert.isFalse(result.bucket.share.once);
+          assert.isTrue(utils.isUuid(result.bucket.share.uuid));
+          unirest.get(URL + 'shared/file/' + result.bucket.share.uuid)
+            .end(function(response) {
+              var result = response.body;
+              assert.equal(result.error, errors.SHARE_EXPIRED.message);
+              done();
+            });
+        });
     });
   });
 
