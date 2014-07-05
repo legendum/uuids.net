@@ -322,18 +322,17 @@ API.method('setBucketFileData', function(params, next) {
   });
 });
 
-// Note the file are created if they don't exist in the bucket.
+// Note the files are created if they don't exist in the bucket
 API.method('uploadBucketFiles', function(params, next) {
   next(null, function(req, res, next2) {
     content.upload(req, res, next2);
   });
 });
 
-// Note the file is created if it doesn't exist in the bucket.
+// Same as "uploadBucketFiles" except "filename" param is required
 API.method('uploadBucketFile', function(params, next) {
-  next(null, function(req, res, next2) {
-    content.upload(req, res, next2);
-  });
+  if (!params.filename) return next(errors.FILENAME_REQUIRED);
+  this.uploadBucketFiles(params, next);
 });
 
 API.method('renameBucketFile', function(params, next) {

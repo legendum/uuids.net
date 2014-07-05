@@ -18,6 +18,7 @@ var util = require('util') // that's the *node* utility library, not ours
     , FILE_EXISTS: ["File already exists", HttpStatus.FORBIDDEN]
     , FILE_MISSING: ["File does not exist", HttpStatus.NOT_FOUND]
     , FILE_NO_CONTENT: ["File has no content", HttpStatus.NOT_FOUND]
+    , FILENAME_REQUIRED: ["Filename required", HttpStatus.BAD_REQUEST]
     , INFO_SIZE_TOO_BIG: ["Sorry, too much data", HttpStatus.REQUEST_TOO_LONG]
     , INVITATION_NEEDED: ["Invitation needed", HttpStatus.FORBIDDEN]
     , JSON_MALFORMED: ["JSON data was malformed", HttpStatus.BAD_REQUEST]
