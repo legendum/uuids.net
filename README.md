@@ -10,4 +10,4 @@
 
 The system is architected to store as little information as possible about its users. It **encrypts all stored data** in such a way that nobody may decrypt it without the user's account name and password, not even the system administrator.
 
-See [API](docs/API.md) for more info.
+See the [API](docs/API.md) for more info.
