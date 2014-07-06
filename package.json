@@ -1,6 +1,6 @@
 {
   "name": "uuids",
-  "description": "A secure service to anonymize and share information privately",
+  "description": "A secure storage service to store and share data privately",
   "homepage": "https://uuids.net",
   "keywords": [
     "anonymous",
