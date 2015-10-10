@@ -9,7 +9,7 @@ var fs = require('fs')
   , scrypt = require('scrypt')
   , uuid = require('node-uuid')
   , errors = require('./errors')
-  , LOCK_EXT = '.lock'
+  , LOCK_EXTN = '.lock'
   , LOCK_WAIT = 200 // milliseconds
   , LOCK_STALE = 5000 // milliseconds
   , RAINBOW_TABLE_PROTECTION = 'en.wikipedia.org/wiki/Edward_Snowden';
@@ -18,7 +18,6 @@ function Utils() {
   Function.prototype.method = function(name, fn) {
     this.prototype[name] = fn;
   };
-  this.LOCK_EXT = LOCK_EXT;
 }
 module.exports = new Utils(); // export a "utils" object, not the function
 
@@ -119,13 +118,13 @@ Utils.method('time', function() {
 });
 
 Utils.method('lock', function(filepath, wait, stale) {
-  var lockfile = filepath + LOCK_EXT;
+  var lockfile = filepath + LOCK_EXTN;
   this.waitWhileLocked(lockfile, wait, stale);
   this.writeFile(lockfile, this.time());
 });
 
 Utils.method('waitWhileLocked', function(filepath, wait, stale) {
-  var lockfile = filepath + LOCK_EXT
+  var lockfile = filepath + LOCK_EXTN
     , locktime;
   wait = wait || LOCK_WAIT;
   stale = stale || LOCK_STALE;
@@ -141,11 +140,11 @@ Utils.method('waitWhileLocked', function(filepath, wait, stale) {
 });
 
 Utils.method('isLocked', function(filepath) {
-  return this.exists(filepath + LOCK_EXT);
+  return this.exists(filepath + LOCK_EXTN);
 });
 
 Utils.method('unlock', function(filepath) {
-  this.unlink(filepath + LOCK_EXT);
+  this.unlink(filepath + LOCK_EXTN);
 });
 
 Utils.method('unlink', function(filepath) {

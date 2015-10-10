@@ -40,7 +40,7 @@
     "url": "http://github.com/legendum/uuids.git"
   },
   "scripts": {
-    "test": "mocha ./test/client/* && mocha ./test/server"
+    "test": "mocha ./test/client; mocha ./test/server"
   },
   "engine": "node >= 0.10.25",
   "version": "1.0.0"
